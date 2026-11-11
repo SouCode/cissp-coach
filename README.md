@@ -1,8 +1,8 @@
-# CISSP Recall
+# CISSP Coach
 
-A CISSP study app built around listening. Each lesson is read aloud by two voices, a teacher who explains and a quizzer who asks. Short checks after each concept and spaced-repetition reviews are scheduled up to your exam date.
+An interactive study guide for the CISSP. Follow along with each lesson and get quizzed as you go, so it actually sticks.
 
-It follows the ISC2 CISSP outline effective April 2024.
+Lessons are read aloud by a teacher voice, and a quizzer voice checks you after every concept. Anything you miss comes back in review before exam day. It follows the ISC2 CISSP outline effective April 2024.
 
 ## Features
 

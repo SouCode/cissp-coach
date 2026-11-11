@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>CISSP Recall</title>
+<title>CISSP Coach</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -215,7 +215,7 @@ input[type=range]{width:200px;accent-color:var(--accent)}
 
 <header class="top" id="top" hidden>
   <div class="top-in">
-    <button class="brand" data-act="home"><span class="mark">CR</span>CISSP Recall</button>
+    <button class="brand" data-act="home"><span class="mark">CC</span>CISSP Coach</button>
     <nav class="nav" id="nav">
       <button data-act="home" data-v="home">Home</button>
       <button data-act="notes" data-v="notes">Notes</button>
@@ -483,8 +483,8 @@ function vLogin(){
   const list=Object.entries(STORE.profiles);
   const creating=loginMode==="new"||!list.length;
   main.innerHTML=`<section class="login">
-    <div style="display:grid;gap:8px"><p class="eyebrow">CISSP · ISC2 April 2024 outline</p><h1>CISSP Recall</h1>
-    <p class="lead">Listen to short lessons in two voices, recall with flashcards, and let spaced repetition schedule your reviews up to exam day.</p></div>
+    <div style="display:grid;gap:8px"><p class="eyebrow">CISSP · ISC2 April 2024 outline</p><h1>CISSP Coach</h1>
+    <p class="lead">An interactive study guide for the CISSP. Follow along with each lesson and get quizzed as you go, so it actually sticks.</p></div>
     ${!storageOK?'<p class="err">This browser is blocking saved data, so progress will be lost when you close the page.</p>':""}
     ${creating?`
     <form class="panel" id="newForm" style="display:grid;gap:14px">
