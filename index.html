@@ -1,0 +1,959 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CISSP Recall</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one centered study column (max 880px) under a sticky top bar; on study screens the "stage" (who is speaking + what) is the hero. */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E8ECF0; --ink:#14202B; --muted:#596978; --line:#D6DDE4;
+  --accent:#1D5C8C; --accent-soft:#E0EAF3; --on-accent:#FFFFFF;
+  --brass:#94600F; --brass-soft:#F4E8D4;
+  --good:#1C7146; --good-soft:#DFF0E6; --bad:#AE352D; --bad-soft:#F7E2DF;
+  --f-display:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E151C; --surface:#162029; --sunk:#1D2935; --ink:#E3E9EF; --muted:#93A2B1; --line:#283646;
+  --accent:#72A9D6; --accent-soft:#1B3045; --on-accent:#0E151C;
+  --brass:#D9A650; --brass-soft:#3A2D17;
+  --good:#5CC28D; --good-soft:#163222; --bad:#EE8177; --bad-soft:#3B1E1B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E151C; --surface:#162029; --sunk:#1D2935; --ink:#E3E9EF; --muted:#93A2B1; --line:#283646;
+  --accent:#72A9D6; --accent-soft:#1B3045; --on-accent:#0E151C;
+  --brass:#D9A650; --brass-soft:#3A2D17;
+  --good:#5CC28D; --good-soft:#163222; --bad:#EE8177; --bad-soft:#3B1E1B; color-scheme:dark}
+
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+*{box-sizing:border-box}
+h1,h2,h3{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:1.75rem;font-weight:800} h2{font-size:1.4rem;font-weight:800} h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:880px;margin:0 auto;display:flex;align-items:center;gap:12px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:800;font-size:1.05rem;background:none;border:0;padding:0;cursor:pointer}
+.brand .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:.72rem;font-family:var(--f-mono);font-weight:500}
+.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.nav button{background:none;border:0;padding:7px 10px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:500;font-size:.92rem}
+.nav button:hover{background:var(--sunk);color:var(--ink)}
+.nav button[aria-current="true"]{color:var(--ink);background:var(--sunk)}
+
+.wrap{max-width:880px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:600;font-size:.95rem;min-height:44px;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.primary:hover:not(:disabled){filter:brightness(1.08)}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink);border-color:var(--line)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:.88rem}
+.btn svg{width:18px;height:18px;flex:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.accent{background:var(--accent-soft);color:var(--accent)}
+.chip.brass{background:var(--brass-soft);color:var(--brass)}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* login */
+.login{max-width:440px;margin:6vh auto 0;display:grid;gap:18px}
+.login .lead{font-size:1.02rem;color:var(--muted)}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:.9rem}
+.field input,.field select{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+.field input:focus,.field select:focus{border-color:var(--accent);outline:none}
+.plist{display:grid;gap:8px}
+.pbtn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left}
+.pbtn:hover,.pbtn[aria-pressed="true"]{border-color:var(--accent)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:800}
+.err{color:var(--bad);font-size:.9rem;min-height:1.2em}
+.note{font-size:.85rem;color:var(--muted)}
+
+/* home */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:2px}
+.tile b{font-family:var(--f-mono);font-size:1.8rem;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile span{font-size:.82rem;color:var(--muted)}
+.tile.hot b{color:var(--accent)}
+@media (max-width:620px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.plan{display:grid;gap:16px}
+.plan-head{display:grid;gap:8px}
+.acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acts .btn{justify-content:flex-start;padding:14px 16px;min-height:64px}
+.acts .btn .t{display:grid;gap:1px;min-width:0}
+.acts .btn small{font-weight:400;font-size:.8rem;opacity:.85}
+.acts .btn.primary{grid-column:1/-1}
+@media (max-width:560px){.acts{grid-template-columns:1fr}}
+.dom{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.dom+.dom{margin-top:8px}
+.dom summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 16px}
+.dom summary::-webkit-details-marker{display:none}
+.dnum{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);width:2.2em}
+.dname{font-weight:600;min-width:0}
+.dmeta{display:flex;gap:10px;align-items:center;font-size:.82rem;color:var(--muted)}
+.meter{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.lessons{border-top:1px solid var(--line)}
+.lrow{display:grid;grid-template-columns:3.2em minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.lrow:first-child{border-top:0}
+.lrow .mono{color:var(--muted);font-size:.85rem}
+.lrow .lt{min-width:0}
+.lrow .lt small{display:block;color:var(--muted);font-size:.8rem}
+.soon{padding:12px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+.spark{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px;align-items:end;height:84px}
+.spark div{display:grid;gap:4px;align-items:end;height:100%;grid-template-rows:1fr auto}
+.spark i{display:block;background:var(--accent-soft);border-radius:4px 4px 0 0;min-height:3px}
+.spark i.on{background:var(--accent)}
+.spark span{font-size:.66rem;color:var(--muted);text-align:center;font-family:var(--f-mono)}
+
+/* study stage */
+.lbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lbar h2{font-size:1.1rem}
+.seg{display:flex;gap:3px}
+.seg i{flex:1;height:5px;border-radius:99px;background:var(--sunk)}
+.seg i.done{background:var(--accent)}
+.seg i.now{background:var(--brass)}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;gap:16px;position:relative}
+.stage[data-who="q"]{border-color:var(--brass)}
+.who{display:flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;color:var(--accent)}
+.stage[data-who="q"] .who{color:var(--brass)}
+.who .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+.eq{display:flex;gap:3px;align-items:end;height:16px;margin-left:4px}
+.eq b{width:3px;height:4px;background:currentColor;border-radius:2px;opacity:.5}
+body[data-audio="speaking"] .eq b{animation:eq .9s ease-in-out infinite;opacity:1}
+.eq b:nth-child(2){animation-delay:.15s!important}.eq b:nth-child(3){animation-delay:.3s!important}.eq b:nth-child(4){animation-delay:.45s!important}
+@keyframes eq{0%,100%{height:4px}50%{height:16px}}
+@media (prefers-reduced-motion:reduce){body[data-audio="speaking"] .eq b{animation:none;height:12px}}
+.stage h2{font-size:1.6rem}
+.stage .big{font-family:var(--f-display);font-size:1.35rem;font-weight:700;line-height:1.35;text-wrap:pretty}
+.answer{border-top:1px dashed var(--line);padding-top:14px;font-size:1.08rem}
+.amsg{font-size:.88rem;color:var(--brass);min-height:0}
+.amsg:empty{display:none}
+details.tx summary{cursor:pointer;color:var(--muted);font-size:.9rem;font-weight:600}
+details.tx[open] summary{margin-bottom:10px}
+.tx p{max-width:65ch;margin-bottom:10px;padding:2px 6px;border-radius:6px;transition:background .2s}
+.tx p.live{background:var(--accent-soft)}
+.keys{margin:0;padding-left:1.2em;display:grid;gap:6px;max-width:65ch}
+.controls{display:flex;justify-content:center;align-items:center;gap:14px}
+.cbtn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer}
+.cbtn:hover{border-color:var(--accent)}
+.cbtn.play{width:68px;height:68px;background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.cbtn svg{width:22px;height:22px}
+.cbtn.play svg{width:28px;height:28px}
+.ctl-label{font-size:.75rem;color:var(--muted);text-align:center;margin-top:4px}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:2em minmax(0,1fr);gap:10px;align-items:start;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;min-height:48px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{font-family:var(--f-mono);font-weight:500;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{border-radius:10px;padding:14px 16px;display:grid;gap:6px}
+.fb.good{background:var(--good-soft)} .fb.bad{background:var(--bad-soft)} .fb.info{background:var(--sunk)}
+.fb strong{font-family:var(--f-display)}
+.grades{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.grades .btn{flex-direction:column;align-items:center;text-align:center;gap:0;padding:8px}
+.grades .btn small{font-weight:400;color:var(--muted);font-size:.78rem}
+.grades .btn.primary small{color:inherit;opacity:.85}
+.ai{border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;background:var(--bg)}
+.ai-text{white-space:pre-wrap;max-width:65ch}
+.kbd{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.result-big{font-family:var(--f-mono);font-size:3rem;line-height:1}
+
+/* exam */
+.ebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.clock{font-family:var(--f-mono);font-size:1.2rem;font-variant-numeric:tabular-nums;margin-left:auto}
+.clock.low{color:var(--bad)}
+.egrid{display:flex;flex-wrap:wrap;gap:5px}
+.egrid button{width:34px;height:34px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-mono);font-size:.78rem;cursor:pointer}
+.egrid button.ans{background:var(--accent-soft);border-color:var(--accent-soft)}
+.egrid button.flag{box-shadow:inset 0 0 0 2px var(--brass)}
+.egrid button.cur{border-color:var(--ink)}
+table{border-collapse:collapse;width:100%}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:.92rem}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.n{font-family:var(--f-mono);text-align:right}
+.tblwrap{overflow-x:auto}
+.missed{display:grid;gap:12px}
+.missed .panel{display:grid;gap:8px}
+
+/* notes + settings */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.86rem}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.note-l{display:grid;gap:10px}
+.cards-list{display:grid;gap:8px;margin-top:8px}
+.cards-list div{padding:10px 12px;background:var(--bg);border-radius:8px;display:grid;gap:2px}
+.cards-list b{font-weight:600}
+.set{display:grid;gap:16px}
+.set .line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+@media (max-width:560px){.set .line{grid-template-columns:1fr}}
+.vrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.vrow select{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;min-height:40px}
+input[type=range]{width:200px;accent-color:var(--accent)}
+.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--accent)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-radius:10px;background:var(--bad-soft)}
+</style>
+
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <button class="brand" data-act="home"><span class="mark">CR</span>CISSP Recall</button>
+    <nav class="nav" id="nav">
+      <button data-act="home" data-v="home">Home</button>
+      <button data-act="notes" data-v="notes">Notes</button>
+      <button data-act="settings" data-v="settings">Settings</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="view"><p class="muted">Loading your study app…</p></main>
+
+<script src="content/d1-part1.js"></script>
+<script src="content/d1-part2.js"></script>
+<script>
+"use strict";
+/* ================= constants ================= */
+const DOMAINS=[
+  {n:1,name:"Security and Risk Management",w:16,planned:12},
+  {n:2,name:"Asset Security",w:10,planned:7},
+  {n:3,name:"Security Architecture and Engineering",w:13,planned:12},
+  {n:4,name:"Communication and Network Security",w:13,planned:9},
+  {n:5,name:"Identity and Access Management",w:13,planned:8},
+  {n:6,name:"Security Assessment and Testing",w:12,planned:7},
+  {n:7,name:"Security Operations",w:13,planned:11},
+  {n:8,name:"Software Development Security",w:10,planned:7}];
+const EXAM_DEFAULT="2026-12-21";
+const VOICES=[["buttery","Buttery: warm and smooth"],["airy","Airy: light and soft"],["glassy","Glassy: crisp and clear"],["rounded","Rounded: full and deep"]];
+const LETTERS="ABCD";
+const IC={
+  play:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
+  replay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M19 12H6M11 6l-6 6 6 6"/></svg>',
+  phones:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>',
+  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>'
+};
+
+/* ================= utils ================= */
+const $=s=>document.querySelector(s);
+const main=document.getElementById("view");
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dayOf=d=>Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);
+const today=()=>dayOf(new Date());
+const strDay=s=>{const [y,m,d]=String(s).split("-").map(Number);return Math.floor(Date.UTC(y,(m||1)-1,d||1)/864e5)};
+const daysLeft=()=>strDay(P.exam)-today();
+const dayLabel=n=>{const d=new Date(n*864e5);return d.toLocaleDateString(undefined,{month:"short",day:"numeric",timeZone:"UTC"})};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const plural=(n,w)=>n+" "+w+(n===1?"":"s");
+const idCmp=(a,b)=>{const x=a.split(".").map(Number),y=b.split(".").map(Number);return x[0]-y[0]||x[1]-y[1]};
+
+/* ================= content ================= */
+let LESSONS=[];const LESSON_BY_ID={};const ITEMS={};
+function loadContent(){
+  LESSONS=(window.CISSP_LESSONS||[]).filter(l=>l&&l.id&&Array.isArray(l.concepts)).sort((a,b)=>idCmp(a.id,b.id));
+  LESSONS.forEach(l=>{
+    LESSON_BY_ID[l.id]=l;
+    l.concepts.forEach(c=>{
+      if(c.check&&Array.isArray(c.check.options)&&c.check.options.length===4)ITEMS[c.id+"c"]={id:c.id+"c",t:"q",l:l.id,d:l.domain,q:c.check.q,o:c.check.options,why:c.check.why,title:c.title};
+      else if(c.card)ITEMS[c.id+"f"]={id:c.id+"f",t:"f",l:l.id,d:l.domain,front:c.card.front,back:c.card.back,title:c.title};
+    });
+    (l.quiz||[]).forEach((q,i)=>{ITEMS[l.id+"q"+i]={id:l.id+"q"+i,t:"q",l:l.id,d:l.domain,q:q.q,o:q.options,why:q.why}});
+  });
+}
+const lessonItems=l=>Object.values(ITEMS).filter(it=>it.l===l.id).map(it=>it.id);
+const domainLessons=n=>LESSONS.filter(l=>l.domain===n);
+
+/* ================= local profiles ================= */
+const LS="cissp-recall:v1";
+let STORE={profiles:{},last:null},storageOK=true,PK=null,P=null;
+function readStore(){try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&s.profiles)STORE=s}catch(e){storageOK=false}}
+function writeStore(){try{localStorage.setItem(LS,JSON.stringify(STORE))}catch(e){storageOK=false}}
+function defaultData(){return{exam:EXAM_DEFAULT,voiceT:"buttery",voiceQ:"glassy",rate:1,auto:true,readAloud:true,lessons:{},c:{},h:{},x:[],created:today()}}
+function save(){if(PK&&STORE.profiles[PK]){STORE.profiles[PK].data=P;writeStore()}}
+async function hashPin(salt,pin){
+  try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(salt+":"+pin));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
+  catch(e){let h=7;for(const ch of salt+pin)h=(h*31+ch.charCodeAt(0))|0;return"x"+h}
+}
+const keyOf=name=>name.trim().toLowerCase();
+
+/* ================= spaced repetition ================= */
+function nextInterval(c,res){
+  const r=c?c.r:0,i=c?c.i:0,e=c?c.e:250;
+  if(res==="wrong")return 1;
+  let n;
+  if(res==="hard")n=r===0?1:Math.max(i+1,Math.round(i*1.2));
+  else if(res==="good")n=r===0?2:r===1?5:Math.round(i*e/100);
+  else n=r===0?4:r===1?8:Math.round(i*e/100*1.3);
+  const dl=daysLeft(); if(dl>2)n=Math.min(n,Math.max(1,dl-2)); // always see it again before exam day
+  return Math.max(1,n);
+}
+function grade(id,res){
+  const T=today();let c=P.c[id];const fresh=!c||c.n===0;
+  if(!c)c=P.c[id]={r:0,i:0,e:250,due:T,l:0,n:0,k:0,t:T};
+  const wasDue=fresh||c.due<=T;
+  const h=P.h[T]||(P.h[T]=[0,0]);h[0]++;
+  c.n++;c.t=T;
+  if(res==="wrong"){c.l++;c.r=0;c.i=0;c.due=T+1;c.e=Math.max(130,c.e-20)}
+  else{c.k++;h[1]++;if(wasDue){const n=nextInterval(c,res);if(res==="hard")c.e=Math.max(130,c.e-15);if(res==="easy")c.e=Math.min(350,c.e+15);c.r++;c.i=n;c.due=T+n}}
+  save();
+}
+function enqueue(id){if(!P.c[id]){const T=today();P.c[id]={r:0,i:0,e:250,due:T,l:0,n:0,k:0,t:T}}}
+const dueIds=()=>Object.keys(P.c).filter(id=>ITEMS[id]&&P.c[id].due<=today()).sort((a,b)=>P.c[a].due-P.c[b].due);
+const ivText=n=>n<1?"now":n===1?"1 day":n<30?n+" days":Math.round(n/7)+" wks";
+function domainMastery(n){
+  const ids=Object.values(ITEMS).filter(it=>it.d===n).map(it=>it.id);
+  if(!ids.length)return 0;
+  const s=ids.reduce((a,id)=>a+(P.c[id]?Math.min(1,P.c[id].i/21):0),0);
+  const avail=domainLessons(n).length/DOMAINS[n-1].planned;
+  return (s/ids.length)*Math.min(1,avail);
+}
+const readiness=()=>Math.round(DOMAINS.reduce((a,d)=>a+d.w*domainMastery(d.n),0));
+function streak(){let d=today();if(!P.h[d])d--;let s=0;while(P.h[d]&&P.h[d][0]>0){s++;d--}return s}
+function nextLesson(){return LESSONS.find(l=>!P.lessons[l.id])||null}
+function phase(){
+  const dl=daysLeft();
+  if(dl<0)return{name:"Exam done",tip:"Set a new exam date in Settings if you're retaking or moving on to another cert."};
+  if(dl===0)return{name:"Exam day",tip:"No new material today. Skim your notes, eat, and read every question for the BEST answer from a manager's point of view."};
+  if(dl<=7)return{name:"Final week: simulate",tip:"Take a timed exam simulation every other day, review every miss, and keep clearing due reviews. No new lessons in the last 3 days."};
+  if(dl<=14)return{name:"Consolidate",tip:"Finish any remaining lessons, clear reviews daily, and drill your weakest domain with notes and AI practice questions."};
+  return{name:"Learn",tip:"Do your due reviews first, then new lessons. Use hands-free mode on walks and drives, and grade yourself in reviews afterwards."};
+}
+function pacePerDay(){
+  const planned=DOMAINS.reduce((a,d)=>a+d.planned,0);
+  const done=Object.keys(P.lessons).length;
+  const learnDays=Math.max(1,daysLeft()-14);
+  return Math.max(1,Math.ceil((planned-done)/learnDays));
+}
+
+/* ================= audio engine (Claude voices, device voice fallback) ================= */
+const AE={tts:null,mode:"none",state:"idle",lineCb:null,_dev:null,ready:null,coolUntil:0,active:null,
+  async init(){
+    try{if(window.claude&&typeof window.claude.use==="function")this.tts=await window.claude.use("tts")}catch(e){this.tts=null}
+    if(this.tts){
+      this.mode="claude";
+      try{this.tts.onState(e=>this.setState(e.state));this.tts.onLine(e=>{if(this.lineCb)this.lineCb(e.id)})}catch(e){}
+    }else if("speechSynthesis" in window)this.mode="device";
+    renderAudioNote();
+  },
+  setState(s){this.state=s;document.body.dataset.audio=s;syncPlay()},
+  async speak(lines){
+    const cooling=this.mode==="claude"&&Date.now()<this.coolUntil&&"speechSynthesis" in window;
+    if(this.mode==="claude"&&!cooling){this.active="claude";
+      const payload=lines.map((l,i)=>({text:l.text.slice(0,1990),voice:l.who==="q"?P.voiceQ:P.voiceT,rate:P.rate,language:"en",id:l.id||("l"+i)}));
+      await this.tts.speak(payload);return;
+    }
+    if(this.mode==="device"||cooling){this.active="device";return this.devSpeak(lines)}
+    throw{code:"unavailable"};
+  },
+  devSpeak(lines){
+    const ss=window.speechSynthesis;this.devCancel();
+    const all=ss.getVoices().filter(v=>/^en/i.test(v.lang));
+    const vt=all.find(v=>v.default)||all[0]||null;
+    const vq=all.find(v=>v!==vt&&vt&&v.lang===vt.lang)||all.find(v=>v!==vt)||vt;
+    return new Promise((res,rej)=>{
+      let i=0;const me={cancelled:false,rej};this._dev=me;
+      const step=()=>{
+        if(me.cancelled)return;
+        if(i>=lines.length){this._dev=null;this.setState("idle");res();return}
+        const l=lines[i],q=l.who==="q",id=l.id||("l"+i);
+        const u=new SpeechSynthesisUtterance(l.text);
+        if(q?vq:vt)u.voice=q?vq:vt;
+        u.rate=P.rate;u.pitch=(q&&vq===vt)?1.25:1;
+        u.onstart=()=>{this.setState("speaking");if(this.lineCb)this.lineCb(id)};
+        u.onend=()=>{i++;step()};u.onerror=()=>{if(!me.cancelled){i++;step()}};
+        ss.speak(u);
+      };
+      this.setState("starting");step();
+    });
+  },
+  devCancel(){if(this._dev){this._dev.cancelled=true;try{this._dev.rej({code:"stopped"})}catch(e){}this._dev=null}try{window.speechSynthesis.cancel()}catch(e){}},
+  async stop(){
+    if(this.tts&&this.active==="claude"){try{await this.tts.stop()}catch(e){}}
+    if(this._dev||this.active==="device"){this.devCancel();this.setState("idle")}
+  },
+  async pause(){if(this.active==="claude"&&this.tts){try{await this.tts.pause()}catch(e){}}else if(this.active==="device"){window.speechSynthesis.pause();this.setState("paused")}},
+  async resume(){if(this.active==="claude"&&this.tts){try{await this.tts.resume()}catch(e){}}else if(this.active==="device"){window.speechSynthesis.resume();this.setState("speaking")}}
+};
+const T=(text,id)=>({text,who:"t",id});
+const Q=(text,id)=>({text,who:"q",id});
+function setAudioMsg(m){const el=$("#amsg");if(el)el.textContent=m||""}
+async function say(lines,onLine,retry){
+  await AE.ready;
+  if(AE.mode==="none"){setAudioMsg("Audio isn't available in this browser. Open the transcript to read along.");return false}
+  const tk=stepTok;
+  if(!retry){await wait(300);if(tk!==stepTok)return false} // rapid taps through steps only send one request
+  AE.lineCb=onLine||null;if(!retry)setAudioMsg("");
+  try{await AE.speak(lines.filter(l=>l.text));if(AE.active==="claude")setAudioMsg("");return true}
+  catch(e){
+    const code=e&&e.code;
+    if(code==="no_gesture"){setAudioMsg("Tap play to start the audio.");return false}
+    if(code==="rate_limited"){
+      const ms=Math.max(2000,e.retryAfterMs||8000);
+      if(!retry&&ms<=15000){
+        setAudioMsg(`Claude's voice is catching up. Continuing in ${Math.ceil(ms/1000)} seconds…`);
+        await wait(ms);if(tk!==stepTok)return false;
+        return say(lines,onLine,true);
+      }
+      if("speechSynthesis" in window){
+        AE.coolUntil=Date.now()+Math.max(ms,45000);
+        setAudioMsg("Claude's voice hit its limit for a moment, so your device voice is reading. Claude's voice comes back automatically.");
+        return say(lines,onLine,true);
+      }
+      setAudioMsg("Claude's voice hit its limit for a moment. Tap play again in a minute.");return false;
+    }
+    if((code==="not_granted"||code==="unavailable"||code==="upstream_error")&&AE.mode==="claude"&&!retry&&"speechSynthesis" in window){
+      AE.mode="device";renderAudioNote();setAudioMsg("Claude voice isn't available right now, so your device voice is reading instead.");
+      return say(lines,onLine,true);
+    }
+    return false; // stopped / replaced / interrupted
+  }
+}
+let audioNote="";
+function renderAudioNote(){audioNote=AE.mode==="claude"?"Claude voices on":AE.mode==="device"?"Device voice (Claude voice not available here)":"No audio in this browser"}
+function syncPlay(){
+  const b=$("#playBtn");if(!b)return;
+  const on=AE.state==="speaking"||AE.state==="starting";
+  b.innerHTML=on?IC.pause:IC.play;b.setAttribute("aria-label",on?"Pause":AE.state==="paused"?"Resume":"Play");
+}
+async function stopAudio(){stepTok++;await AE.stop()}
+
+/* ================= AI (Claude sample) ================= */
+let _samp;const samp=()=>_samp||(_samp=(async()=>{try{return window.claude&&window.claude.use?await window.claude.use("sample"):null}catch(e){return null}})());
+function aiErr(e){const c=e&&e.code;return c==="not_granted"?"AI help is turned off for this page.":c==="rate_limited"?"Too many requests. Try again in a minute.":"Couldn't reach Claude. Try again."}
+async function aiExplain(box,title,text){
+  box.hidden=false;const out=box.querySelector(".ai-text"),btn=box.querySelector("[data-act=aiListen]");
+  if(btn)btn.hidden=true;
+  const s=await samp();if(!s){out.textContent="AI explanations aren't available in this view.";return}
+  out.textContent="Thinking…";
+  const prompt=`You are a CISSP tutor helping someone pass the CISSP exam (ISC2 April 2024 outline). Re-explain the concept below in a fresh way the learner will LISTEN to. Use one everyday analogy, then one exam tip framed the way ISC2 thinks (risk-based, "think like a manager"). 120-170 words. Plain conversational English, short sentences, no markdown, no lists, no headings.\n\nConcept: ${title}\nOriginal explanation: ${text}`;
+  try{const r=await s(prompt,{modelTier:"default",onText:u=>{out.textContent=u.text}});out.textContent=r.text;box.dataset.say=r.text;if(btn)btn.hidden=false}
+  catch(e){out.textContent=aiErr(e)}
+}
+async function aiQuestion(box,lesson){
+  box.hidden=false;box.innerHTML='<p class="muted">Writing a new practice question…</p>';
+  const s=await samp();if(!s){box.innerHTML='<p class="muted">AI practice questions aren\'t available in this view.</p>';return}
+  const prompt=`Write ONE new CISSP practice question (ISC2 April 2024 outline) on this lesson: "${lesson.title}" (${lesson.objective}). Key points: ${(lesson.keys||[]).join("; ")}. Make it scenario-based, with BEST/FIRST/MOST wording where natural, four options, exactly one correct, plausible distractors, no "all of the above". Return only JSON: {"q":"question","options":["A","B","C","D"],"answer":0,"why":"1-3 sentence explanation"}`;
+  try{
+    const j=await s.json(prompt,{modelTier:"default",cache:false});
+    if(!j||typeof j.q!=="string"||!Array.isArray(j.options)||j.options.length!==4||!(j.answer>=0&&j.answer<4))throw{code:"bad"};
+    box.innerHTML=`<p class="eyebrow">AI practice question</p><p class="big" style="font-size:1.1rem">${esc(j.q)}</p><div class="opts">${j.options.map((o,i)=>`<button class="opt" data-act="aiPick" data-arg="${i}"><span class="k">${LETTERS[i]}</span><span>${esc(o)}</span></button>`).join("")}</div><div class="fbx"></div>`;
+    box._q=j;
+  }catch(e){box.innerHTML=`<p class="muted">${e&&e.code==="bad"?"Claude's answer came back in the wrong shape. Try again.":esc(aiErr(e))}</p>`}
+}
+
+/* ================= router + actions ================= */
+let view="login";const ACT={};
+document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(!el||el.disabled)return;const f=ACT[el.dataset.act];if(f){e.preventDefault();f(el.dataset.arg,el,e)}});
+async function go(v,arg){
+  await stopAudio();clearInterval(X&&X.timer);
+  view=v;window.scrollTo(0,0);
+  document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current",String(b.dataset.v===v)));
+  ({login:vLogin,home:vHome,notes:vNotes,settings:vSettings,examSetup:vExamSetup})[v](arg);
+}
+ACT.home=()=>P?go("home"):go("login");
+ACT.notes=()=>go("notes");
+ACT.settings=()=>go("settings");
+
+/* ================= login ================= */
+let loginSel=null,loginMode=null;
+function vLogin(){
+  $("#top").hidden=true;
+  const list=Object.entries(STORE.profiles);
+  const creating=loginMode==="new"||!list.length;
+  main.innerHTML=`<section class="login">
+    <div style="display:grid;gap:8px"><p class="eyebrow">CISSP · ISC2 April 2024 outline</p><h1>CISSP Recall</h1>
+    <p class="lead">Listen to short lessons in two voices, recall with flashcards, and let spaced repetition schedule your reviews up to exam day.</p></div>
+    ${!storageOK?'<p class="err">This browser is blocking saved data, so progress will be lost when you close the page.</p>':""}
+    ${creating?`
+    <form class="panel" id="newForm" style="display:grid;gap:14px">
+      <h3>Create your profile</h3>
+      <div class="field"><label for="nName">Name</label><input id="nName" autocomplete="off" maxlength="30" required placeholder="e.g. John"></div>
+      <div class="field"><label for="nPin">PIN (4 to 8 digits)</label><input id="nPin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" required></div>
+      <div class="field"><label for="nPin2">Confirm PIN</label><input id="nPin2" type="password" inputmode="numeric" maxlength="8" required></div>
+      <p class="err" id="lerr"></p>
+      <div class="row"><button class="btn primary" type="submit">Create profile</button>${list.length?'<button class="btn ghost" type="button" data-act="loginBack">Back</button>':""}</div>
+    </form>`:`
+    <form class="panel" id="inForm" style="display:grid;gap:14px">
+      <h3>Who's studying?</h3>
+      <div class="plist">${list.map(([k,p])=>`<button type="button" class="pbtn" data-act="pickProfile" data-arg="${esc(k)}" aria-pressed="${loginSel===k}"><span class="avatar">${esc(p.name[0].toUpperCase())}</span><span>${esc(p.name)}</span></button>`).join("")}</div>
+      <div class="field" ${loginSel?"":"hidden"}><label for="pin">PIN for ${esc(loginSel?STORE.profiles[loginSel].name:"")}</label><input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></div>
+      <p class="err" id="lerr"></p>
+      <div class="row"><button class="btn primary" type="submit" ${loginSel?"":"disabled"}>Unlock</button><button class="btn ghost" type="button" data-act="newProfile">New profile</button></div>
+    </form>`}
+    <p class="note">Profiles and progress are saved in this browser only. The PIN stops others on this device from casually opening your profile; it isn't strong security, so don't reuse a bank PIN.</p>
+  </section>`;
+  const nf=$("#newForm");
+  if(nf)nf.addEventListener("submit",async e=>{
+    e.preventDefault();const name=$("#nName").value.trim(),pin=$("#nPin").value,pin2=$("#nPin2").value,err=$("#lerr");
+    if(!name)return err.textContent="Enter a name.";
+    if(!/^\d{4,8}$/.test(pin))return err.textContent="Use a PIN of 4 to 8 digits.";
+    if(pin!==pin2)return err.textContent="The PINs don't match.";
+    const k=keyOf(name);if(STORE.profiles[k])return err.textContent="A profile with that name already exists.";
+    const salt=Math.random().toString(36).slice(2,10);
+    STORE.profiles[k]={name,salt,hash:await hashPin(salt,pin),data:defaultData()};STORE.last=k;writeStore();
+    loginMode=null;signIn(k);
+  });
+  const inf=$("#inForm");
+  if(inf){inf.addEventListener("submit",async e=>{
+    e.preventDefault();if(!loginSel)return;const p=STORE.profiles[loginSel];
+    if(await hashPin(p.salt,$("#pin").value)===p.hash){signIn(loginSel)}else{$("#lerr").textContent="That PIN isn't right. Try again.";$("#pin").select()}
+  });if(loginSel)$("#pin").focus()}
+}
+ACT.pickProfile=k=>{loginSel=k;vLogin()};
+ACT.newProfile=()=>{loginMode="new";vLogin()};
+ACT.loginBack=()=>{loginMode=null;vLogin()};
+function signIn(k){
+  PK=k;P=Object.assign(defaultData(),STORE.profiles[k].data||{});STORE.last=k;save();
+  $("#top").hidden=false;loginSel=null;go("home");
+}
+ACT.logout=()=>{stopAudio();PK=null;P=null;loginSel=null;go("login")};
+
+/* ================= home ================= */
+function vHome(){
+  const dl=daysLeft(),due=dueIds().length,rd=readiness(),st=streak(),nx=nextLesson(),ph=phase();
+  const name=STORE.profiles[PK].name;
+  const hr=new Date().getHours(),greet=hr<12?"Good morning":hr<18?"Good afternoon":"Good evening";
+  const T0=today(),days=[...Array(14)].map((_,i)=>T0-13+i),mx=Math.max(5,...days.map(d=>(P.h[d]||[0])[0]));
+  const quizN=Object.values(ITEMS).filter(i=>i.t==="q").length;
+  main.innerHTML=`
+  <section style="display:grid;gap:4px"><p class="eyebrow">Exam target · ${esc(new Date(strDay(P.exam)*864e5).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",timeZone:"UTC"}))}</p><h1>${greet}, ${esc(name)}</h1></section>
+  <section class="tiles">
+    <div class="tile"><b>${Math.max(0,dl)}</b><span>days to exam</span></div>
+    <div class="tile ${due?"hot":""}"><b>${due}</b><span>reviews due</span></div>
+    <div class="tile"><b>${rd}%</b><span>exam readiness</span></div>
+    <div class="tile"><b>${st}</b><span>day streak</span></div>
+  </section>
+  <section class="panel plan">
+    <div class="plan-head"><div class="row"><span class="chip brass">${esc(ph.name)}</span><span class="chip">${esc(audioNote)}</span></div><p>${esc(ph.tip)}</p></div>
+    <div class="acts">
+      ${nx?`<button class="btn primary" data-act="lesson" data-arg="${nx.id}">${IC.play}<span class="t"><span>${P.lessons[LESSONS[0].id]?"Next lesson":"Start your first lesson"}: ${esc(nx.id)} ${esc(nx.title)}</span><small>Listen, recall, then a short quiz · about ${nx.minutes||8} min</small></span></button>`
+        :`<div class="fb info" style="grid-column:1/-1"><strong>You've finished every available lesson.</strong><span>New domains are being added. Until then, keep reviews at zero and run exam simulations.</span></div>`}
+      <button class="btn" data-act="handsfree" ${nx?"":"disabled"}>${IC.phones}<span class="t"><span>Hands-free mode</span><small>Plays lessons back to back, no tapping</small></span></button>
+      <button class="btn" data-act="review" ${due?"":"disabled"}>${IC.cards}<span class="t"><span>Review ${due?plural(due,"card"):"(nothing due)"}</span><small>Spaced repetition, read aloud</small></span></button>
+      <button class="btn" data-act="examSetup" ${quizN?"":"disabled"}>${IC.clock}<span class="t"><span>Exam simulation</span><small>Timed, exam pace, scored by domain</small></span></button>
+      <button class="btn" data-act="notes">${IC.spark}<span class="t"><span>Quick-reference notes</span><small>Key points + AI practice questions</small></span></button>
+    </div>
+    <p class="note">Pace to finish all 8 domains with two weeks to spare: about ${plural(pacePerDay(),"lesson")} a day, plus your reviews.</p>
+  </section>
+  <section style="display:grid;gap:10px">
+    <div class="row" style="justify-content:space-between"><h3>Domains</h3><span class="note">Weight = share of the exam</span></div>
+    <div>${DOMAINS.map(d=>domRow(d)).join("")}</div>
+  </section>
+  <section class="panel" style="display:grid;gap:12px">
+    <div class="row" style="justify-content:space-between"><h3>Last 14 days</h3><span class="note mono">${(P.h[T0]||[0])[0]} answered today</span></div>
+    <div class="spark" role="img" aria-label="Cards answered per day over the last 14 days">${days.map(d=>{const n=(P.h[d]||[0])[0];return`<div title="${dayLabel(d)}: ${n}"><i class="${n?"on":""}" style="height:${Math.max(3,Math.round(n/mx*64))}px"></i><span>${new Date(d*864e5).getUTCDate()}</span></div>`}).join("")}</div>
+  </section>`;
+}
+function domRow(d){
+  const ls=domainLessons(d.n),done=ls.filter(l=>P.lessons[l.id]).length,m=Math.round(domainMastery(d.n)*100);
+  const nx=nextLesson();
+  return`<details class="dom" ${d.n===(nx?nx.domain:1)?"open":""}>
+    <summary><span class="dnum">D${d.n}</span><span class="dname">${esc(d.name)}<div class="meter"><i style="width:${ls.length?Math.round(done/d.planned*100):0}%"></i></div></span>
+    <span class="dmeta"><span class="mono">${d.w}%</span><span class="chip ${m>=60?"good":m>0?"accent":""}">${ls.length?m+"% mastery":"Coming soon"}</span></span></summary>
+    <div class="lessons">${ls.length?ls.map(l=>{const st=P.lessons[l.id];return`<div class="lrow"><span class="mono">${l.id}</span><span class="lt">${esc(l.title)}<small>${st?"Done "+dayLabel(st.done)+(st.score!=null?" · quiz "+Math.round(st.score*100)+"%":" · hands-free"):(nx&&nx.id===l.id?"Up next":(l.minutes||8)+" min")}</small></span>
+      <span class="row" style="gap:6px"><button class="btn sm" data-act="lesson" data-arg="${l.id}" aria-label="Listen to lesson ${l.id}">${IC.play}${st?"Again":"Listen"}</button><button class="btn sm ghost" data-act="handsfree" data-arg="${l.id}" aria-label="Hands-free lesson ${l.id}">${IC.phones}</button></span></div>`}).join("")
+      +(ls.length<d.planned?`<div class="soon">${d.planned-ls.length} more lessons for this domain are on the way.</div>`:"")
+      :`<div class="soon">Lessons for this domain are being written and will appear here.</div>`}</div>
+  </details>`;
+}
+
+/* ================= lesson player ================= */
+let L=null,stepTok=0;
+ACT.lesson=id=>startLesson(id,false);
+ACT.handsfree=id=>{const l=id?LESSON_BY_ID[id]:nextLesson();if(l)startLesson(l.id,true)};
+async function startLesson(id,auto){
+  const l=LESSON_BY_ID[id];if(!l)return;
+  await go_quiet("lesson");
+  const steps=[{k:"intro"}];
+  l.concepts.forEach((c,i)=>{steps.push({k:"concept",i});if(c.check&&c.check.options&&c.check.options.length===4)steps.push({k:"check",i});else if(c.card)steps.push({k:"card",i})});
+  steps.push({k:"recap"});
+  (l.quiz||[]).forEach((q,i)=>steps.push({k:"quiz",i}));
+  steps.push({k:"done"});
+  L={l,steps,s:0,auto,cards:{},res:{},revealed:false,picked:null,order:{},graded:false};
+  renderLesson();runStep();
+}
+async function go_quiet(v){await stopAudio();clearInterval(X&&X.timer);view=v;window.scrollTo(0,0);document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current","false"))}
+const stepQ=st=>st.k==="quiz"?L.l.quiz[st.i]:L.l.concepts[st.i].check;
+const stepItem=st=>st.k==="quiz"?L.l.id+"q"+st.i:st.k==="check"?L.l.concepts[st.i].id+"c":L.l.concepts[st.i].id+"f";
+const ordOf=()=>L.order[L.s]||(L.order[L.s]=shuffle([0,1,2,3]));
+const tally=k=>{const idx=L.steps.map((x,j)=>x.k===k?j:-1).filter(j=>j>=0);return[idx.filter(j=>L.res[j]).length,idx.length]};
+const voiceName=w=>{const v=w==="q"?P.voiceQ:P.voiceT;return v[0].toUpperCase()+v.slice(1)};
+function stageHead(who,eyebrow){return`<div class="who"><span class="dot"></span>${who==="q"?"Quizzer":"Teacher"} · ${voiceName(who)}<span class="eq" aria-hidden="true"><b></b><b></b><b></b><b></b></span></div>${eyebrow?`<p class="eyebrow">${eyebrow}</p>`:""}`}
+function renderLesson(){
+  const {l,steps,s}=L,st=steps[s];
+  const segs=steps.slice(0,-1).map((x,i)=>`<i class="${i<s?"done":i===s?"now":""}"></i>`).join("");
+  let who="t",body="";
+  if(st.k==="intro"){
+    body=`${stageHead("t","Lesson "+l.id+" · "+esc(DOMAINS[l.domain-1].name))}<h2>${esc(l.title)}</h2><p class="muted">${esc(l.intro)}</p><p class="note">${l.concepts.length} concepts, each followed by a quick multiple-choice check, then a recap and a ${l.quiz.length}-question review.</p>`;
+  }else if(st.k==="concept"){
+    const c=l.concepts[st.i];
+    body=`${stageHead("t","Concept "+(st.i+1)+" of "+l.concepts.length)}<h2>${esc(c.title)}</h2>
+      <details class="tx"><summary>Show transcript</summary>${c.script.map((p,j)=>`<p id="p${j}">${esc(p)}</p>`).join("")}</details>
+      <div class="row"><button class="btn sm" data-act="aiExplain">${IC.spark}Explain it differently</button></div>
+      <div class="ai" id="aiBox" hidden><p class="eyebrow">Claude's take</p><div class="ai-text"></div><div class="row"><button class="btn sm" data-act="aiListen" hidden>${IC.speaker}Listen</button></div></div>`;
+  }else if(st.k==="card"){
+    who="q";const c=l.concepts[st.i];
+    body=`${stageHead("q","Flashcard · "+esc(c.title))}<p class="big">${esc(c.card.front)}</p>
+      ${L.revealed?`<div class="answer">${esc(c.card.back)}</div>
+        ${L.auto?"":`<div class="grades"><button class="btn" data-act="cardGrade" data-arg="wrong">Missed it<small>see it tomorrow · 1</small></button><button class="btn primary" data-act="cardGrade" data-arg="good">Got it<small>see it in ${ivText(nextInterval(P.c[c.id+"f"],"good"))} · 2</small></button></div>`}`
+      :`${L.auto?'<p class="note">Answer in your head. The answer plays in a few seconds.</p>':`<div class="row"><button class="btn primary" data-act="reveal">Reveal answer</button><span class="kbd">Enter</span></div>`}`}`;
+  }else if(st.k==="recap"){
+    body=`${stageHead("t","Recap")}<h2>${esc(l.title)}: the takeaways</h2><ul class="keys">${(l.keys||[]).map(k=>`<li>${esc(k)}</li>`).join("")}</ul>
+      <details class="tx"><summary>Show transcript</summary><p id="p0">${esc(l.recap)}</p></details>`;
+  }else if(st.k==="quiz"||st.k==="check"){
+    who="q";const q=stepQ(st),ord=ordOf(),pk=L.picked;
+    body=`${stageHead(pk==null?"q":"t",st.k==="check"?"Quick check · "+esc(l.concepts[st.i].title):"Review question "+(st.i+1)+" of "+l.quiz.length)}<p class="big">${esc(q.q)}</p>
+      <div class="opts">${ord.map((o,k)=>{let cls="";if(pk!=null){if(o===0)cls="right";else if(k===pk)cls="wrong"}return`<button class="opt ${cls}" data-act="lpick" data-arg="${k}" ${pk!=null?"disabled":""}><span class="k">${LETTERS[k]}</span><span>${esc(q.options[o])}</span></button>`}).join("")}</div>
+      ${pk!=null?quizFeedback(q,ord,pk,!L.auto&&!L.graded,"lconf"):""}`;
+    if(pk!=null)who="t";
+  }else{
+    const [qc,qs]=tally("quiz"),[cg,cn]=tally("check"),nx=LESSONS[LESSONS.indexOf(l)+1];
+    body=`${stageHead("t","Lesson complete")}<h2>${esc(l.id)} ${esc(l.title)}: done</h2>
+      ${L.auto?`<p>You listened to the full lesson. Its ${plural(lessonItems(l).length,"card")} are in today's review so you can grade yourself.</p>`
+      :`<div class="row" style="gap:24px"><div><div class="result-big">${qc}/${qs}</div><p class="note">review questions right</p></div><div><div class="result-big">${cg}/${cn}</div><p class="note">concept checks right</p></div></div><p>Everything from this lesson is now scheduled for spaced review.</p>`}
+      <div class="row">${nx?`<button class="btn primary" data-act="${L.auto?"handsfree":"lesson"}" data-arg="${nx.id}">${IC.next}Next: ${esc(nx.id)} ${esc(nx.title)}</button>`:""}<button class="btn" data-act="home">Back to home</button></div>
+      ${L.auto&&nx?'<p class="note">Hands-free continues to the next lesson in a few seconds.</p>':""}`;
+  }
+  main.innerHTML=`<div class="lbar"><button class="btn sm ghost" data-act="home">${IC.back}Home</button><h2>${esc(l.id)} ${esc(l.title)}</h2>${L.auto?'<span class="chip brass">Hands-free</span>':""}</div>
+    <div class="seg" aria-label="Lesson progress">${segs}</div>
+    <section class="stage" data-who="${who}">${body}<p class="amsg" id="amsg"></p></section>
+    ${st.k!=="done"?`<div><div class="controls"><button class="cbtn" data-act="replay" aria-label="Replay">${IC.replay}</button><button class="cbtn play" id="playBtn" data-act="playpause" aria-label="Play">${IC.play}</button><button class="cbtn" data-act="lnext" aria-label="Next">${IC.next}</button></div><p class="ctl-label">Space to play or pause · → for next</p></div>`:""}`;
+  syncPlay();
+}
+function quizFeedback(q,ord,pk,showConf,act){
+  const ok=ord[pk]===0,ci=ord.indexOf(0);
+  return`<div class="fb ${ok?"good":"bad"}"><strong>${ok?"Correct.":"Not quite. The answer is "+LETTERS[ci]+"."}</strong><span>${esc(q.why)}</span></div>
+  ${showConf?(ok?`<div><p class="note" style="margin-bottom:8px">How sure were you?</p><div class="grades"><button class="btn" data-act="${act}" data-arg="hard">Guessed<small>${ivText(nextInterval(P.c[curItemId()],"hard"))} · 1</small></button><button class="btn primary" data-act="${act}" data-arg="good">Knew it<small>${ivText(nextInterval(P.c[curItemId()],"good"))} · 2</small></button><button class="btn" data-act="${act}" data-arg="easy">Easy<small>${ivText(nextInterval(P.c[curItemId()],"easy"))} · 3</small></button></div></div>`
+    :`<div class="row"><button class="btn primary" data-act="${act}" data-arg="wrong">Continue</button><span class="kbd">Enter</span></div>`):""}`;
+}
+function curItemId(){
+  if(view==="lesson")return stepItem(L.steps[L.s]);
+  if(view==="review")return R.q[R.idx];
+  return null;
+}
+function hl(id){document.querySelectorAll(".tx p").forEach(p=>p.classList.toggle("live",p.id===id))}
+async function runStep(){
+  const tok=++stepTok,st=L.steps[L.s],l=L.l;
+  const alive=()=>tok===stepTok&&view==="lesson";
+  const autoNext=async ok=>{if(ok&&alive()&&(L.auto||P.auto)){await wait(700);if(alive())lnext()}};
+  if(st.k==="intro"){autoNext(await say([T(`Lesson ${l.id}. ${l.title}.`),T(l.intro)]))}
+  else if(st.k==="concept"){const c=l.concepts[st.i];autoNext(await say([T(c.title+".","t0"),...c.script.map((p,j)=>T(p,"p"+j))],hl))}
+  else if(st.k==="card"){
+    const c=l.concepts[st.i];
+    if(!L.revealed){
+      const ok=await say([Q("Flashcard. "+c.card.front)]);
+      if(ok&&alive()&&L.auto){await wait(5000);if(!alive())return;L.revealed=true;renderLesson();runStep()}
+    }else{
+      const ok=await say([Q(c.card.back)]);
+      if(ok&&alive()&&L.auto){await wait(1200);if(alive())lnext()}
+    }
+  }
+  else if(st.k==="recap"){autoNext(await say([T("Let's recap.","t0"),T(l.recap,"p0")],hl))}
+  else if(st.k==="quiz"||st.k==="check"){
+    const q=stepQ(st),ord=ordOf();
+    if(L.picked==null){
+      const ok=await say([Q(st.k==="check"?`Quick check. ${q.q}`:`Question ${st.i+1}. ${q.q}`),...ord.map((o,k)=>Q(`${LETTERS[k]}. ${q.options[o]}`))]);
+      if(ok&&alive()&&L.auto){await wait(7000);if(!alive())return;L.picked=ord.indexOf(0);renderLesson();runStep()}
+    }else{
+      const ci=ord.indexOf(0),right=ord[L.picked]===0&&!L.auto;
+      const ok=await say([T((L.auto?`The answer is ${LETTERS[ci]}. ${q.options[0]}. `:right?"Correct. ":`Not quite. The answer is ${LETTERS[ci]}. ${q.options[0]}. `)+q.why)]);
+      if(ok&&alive()&&L.auto){await wait(1500);if(alive())lnext()}
+    }
+  }
+  else if(st.k==="done"){
+    finishLesson();
+    const nx=LESSONS[LESSONS.indexOf(l)+1];
+    const ok=await say([T(L.auto?`That's the end of lesson ${l.id}. Its flashcards and questions are waiting in your review.${nx?" Next up, lesson "+nx.id+", "+nx.title+".":""}`
+      :`Lesson complete. You got ${tally("quiz")[0]} of ${l.quiz.length} review questions right. Everything from this lesson is now scheduled for review.`)]);
+    if(ok&&alive()&&L.auto&&nx){await wait(3000);if(alive())startLesson(nx.id,true)}
+  }
+}
+function finishLesson(){
+  const l=L.l;if(L.finished)return;L.finished=true;
+  const qc=tally("quiz")[0];
+  P.lessons[l.id]={done:today(),score:L.auto?null:(l.quiz.length?qc/l.quiz.length:null)};
+  lessonItems(l).forEach(enqueue);
+  const h=P.h[today()]||(P.h[today()]=[0,0]);if(L.auto)h[0]+=0;save();
+}
+async function lnext(){
+  if(!L||L.s>=L.steps.length-1)return;
+  const st=L.steps[L.s];
+  if(!L.auto){ // skipped items still enter the review queue
+    if(st.k==="card"&&!(st.i in L.cards))enqueue(L.l.concepts[st.i].id+"f");
+    if((st.k==="quiz"||st.k==="check")&&!(L.s in L.res))enqueue(stepItem(st));
+  }
+  await stopAudio();L.s++;L.revealed=false;L.picked=null;L.graded=false;renderLesson();runStep();window.scrollTo(0,0);
+}
+ACT.lnext=()=>lnext();
+ACT.replay=async()=>{await stopAudio();if(view==="lesson")runStep();else if(view==="review")readReview()};
+ACT.playpause=async()=>{
+  if(AE.state==="speaking"||AE.state==="starting")return AE.pause();
+  if(AE.state==="paused")return AE.resume();
+  if(view==="lesson")runStep();else if(view==="review")readReview();
+};
+ACT.reveal=()=>{if(view==="lesson"){L.revealed=true;renderLesson();runStep()}else if(view==="review"){R.revealed=true;renderReview();readReview()}};
+ACT.cardGrade=res=>{const st=L.steps[L.s];const id=L.l.concepts[st.i].id+"f";grade(id,res);L.cards[st.i]=res!=="wrong";lnext()};
+ACT.lpick=k=>{
+  const st=L.steps[L.s];if(L.picked!=null||L.auto)return;
+  L.picked=+k;const ok=ordOf()[L.picked]===0;L.res[L.s]=ok;
+  if(!ok){grade(stepItem(st),"wrong");L.graded=false}
+  renderLesson();runStep();
+};
+ACT.lconf=res=>{const st=L.steps[L.s];if(res!=="wrong")grade(stepItem(st),res);lnext()};
+ACT.aiExplain=()=>{const c=L.l.concepts[L.steps[L.s].i];aiExplain($("#aiBox"),c.title,c.script.join(" "))};
+ACT.aiListen=(a,el)=>{const box=el.closest(".ai");if(box&&box.dataset.say)say([T(box.dataset.say)])};
+
+/* ================= review (spaced repetition) ================= */
+let R=null;
+ACT.review=async()=>{const ids=dueIds();if(!ids.length)return;await go_quiet("review");R={q:shuffleByDomain(ids),idx:0,n:0,k:0,re:{},revealed:false,picked:null,order:null};prepReview();renderReview();readReview()};
+function shuffleByDomain(ids){ // interleave lessons so the same topic doesn't repeat back to back
+  const by={};shuffle(ids).forEach(id=>{const l=ITEMS[id].l;(by[l]=by[l]||[]).push(id)});
+  const out=[],keys=shuffle(Object.keys(by));let more=true;
+  while(more){more=false;keys.forEach(k=>{if(by[k].length){out.push(by[k].shift());more=true}})}
+  return out;
+}
+function prepReview(){R.revealed=false;R.picked=null;R.order=shuffle([0,1,2,3])}
+function renderReview(){
+  if(R.idx>=R.q.length){
+    main.innerHTML=`<section class="stage">${stageHead("t","Review complete")}<h2>All caught up</h2>
+      <div class="row" style="gap:24px"><div><div class="result-big">${R.k}/${R.n}</div><p class="note">answered correctly</p></div></div>
+      <p>Missed cards come back tomorrow, and the rest are spaced further out, timed to your exam date.</p>
+      <div class="row"><button class="btn primary" data-act="home">Back to home</button>${nextLesson()?`<button class="btn" data-act="lesson" data-arg="${nextLesson().id}">${IC.play}Next lesson</button>`:""}</div></section>`;
+    say([T(`Review complete. You got ${R.k} out of ${R.n}.`)]);return;
+  }
+  const id=R.q[R.idx],it=ITEMS[id],l=LESSON_BY_ID[it.l];
+  const left=R.q.length-R.idx;
+  let body;
+  if(it.t==="f"){
+    body=`${stageHead(R.revealed?"t":"q",esc(it.title)+" · lesson "+l.id)}<p class="big">${esc(it.front)}</p>
+      ${R.revealed?`<div class="answer">${esc(it.back)}</div><div class="grades">${[["wrong","Missed"],["hard","Hard"],["good","Got it"],["easy","Easy"]].map(([r,lab],i)=>`<button class="btn ${r==="good"?"primary":""}" data-act="rgrade" data-arg="${r}">${lab}<small>${r==="wrong"?"again today":ivText(nextInterval(P.c[id],r))} · ${i+1}</small></button>`).join("")}</div>`
+      :`<div class="row"><button class="btn primary" data-act="reveal">Reveal answer</button><span class="kbd">Enter</span></div>`}`;
+  }else{
+    const pk=R.picked;
+    body=`${stageHead(pk==null?"q":"t","Question · lesson "+l.id+" "+esc(l.title))}<p class="big">${esc(it.q)}</p>
+      <div class="opts">${R.order.map((o,k)=>{let cls="";if(pk!=null){if(o===0)cls="right";else if(k===pk)cls="wrong"}return`<button class="opt ${cls}" data-act="rpick" data-arg="${k}" ${pk!=null?"disabled":""}><span class="k">${LETTERS[k]}</span><span>${esc(it.o[o])}</span></button>`}).join("")}</div>
+      ${pk!=null?quizFeedback({why:it.why},R.order,pk,true,"rconf"):""}`;
+  }
+  main.innerHTML=`<div class="lbar"><button class="btn sm ghost" data-act="home">${IC.back}Home</button><h2>Review</h2><span class="chip mono">${left} left</span>
+    <label class="toggle" style="margin-left:auto"><input type="checkbox" id="ra" ${P.readAloud?"checked":""}>Read aloud</label></div>
+    <section class="stage" data-who="${(it.t==="f"&&!R.revealed)||(it.t==="q"&&R.picked==null)?"q":"t"}">${body}<p class="amsg" id="amsg"></p></section>
+    <div><div class="controls"><button class="cbtn" data-act="replay" aria-label="Replay">${IC.replay}</button><button class="cbtn play" id="playBtn" data-act="playpause" aria-label="Play">${IC.play}</button></div></div>`;
+  $("#ra").addEventListener("change",e=>{P.readAloud=e.target.checked;save();if(!P.readAloud)stopAudio()});
+  syncPlay();
+}
+function readReview(){
+  if(!P.readAloud||!R||R.idx>=R.q.length)return;
+  stepTok++;
+  const it=ITEMS[R.q[R.idx]];
+  if(it.t==="f")say(R.revealed?[Q(it.back)]:[Q(it.front)]);
+  else if(R.picked==null)say([Q(it.q),...R.order.map((o,k)=>Q(`${LETTERS[k]}. ${it.o[o]}`))]);
+  else{const ci=R.order.indexOf(0),ok=R.order[R.picked]===0;say([T((ok?"Correct. ":`The answer is ${LETTERS[ci]}. ${it.o[0]}. `)+it.why)])}
+}
+async function rAdvance(res){
+  const id=R.q[R.idx];grade(id,res);R.n++;if(res!=="wrong")R.k++;
+  if(res==="wrong"&&(R.re[id]||0)<2){R.re[id]=(R.re[id]||0)+1;R.q.splice(Math.min(R.q.length,R.idx+5),0,id)}
+  await stopAudio();R.idx++;prepReview();renderReview();readReview();window.scrollTo(0,0);
+}
+ACT.rgrade=res=>rAdvance(res);
+ACT.rpick=k=>{if(R.picked!=null)return;R.picked=+k;renderReview();readReview()};
+ACT.rconf=res=>rAdvance(res);
+
+/* ================= exam simulation ================= */
+let X=null;
+function vExamSetup(){
+  const pool=Object.values(ITEMS).filter(i=>i.t==="q");
+  const opts=[10,25,50,100,150];
+  main.innerHTML=`<div class="lbar"><button class="btn sm ghost" data-act="home">${IC.back}Home</button><h2>Exam simulation</h2></div>
+  <section class="panel" style="display:grid;gap:16px">
+    <p>The real CISSP is a computer adaptive test of 100 to 150 questions in 3 hours, which works out to about <span class="mono">72</span> seconds a question. This simulation uses the same pace and shows no feedback until you finish.</p>
+    <p class="note">Your bank has ${plural(pool.length,"question")} so far, from ${plural(new Set(pool.map(p=>p.d)).size,"domain")}. Longer simulations unlock as domains are added.</p>
+    <div class="field"><label>Number of questions</label><div class="row">${opts.map(n=>`<button class="btn ${n===Math.min(25,pool.length)?"primary":""}" data-act="examStart" data-arg="${n}" ${n>pool.length?"disabled":""}><span class="mono">${n}</span> · ${Math.round(n*72/60)} min</button>`).join("")}${pool.length<10?`<button class="btn primary" data-act="examStart" data-arg="${pool.length}">All ${pool.length}</button>`:""}</div></div>
+    <label class="toggle"><input type="checkbox" id="strict" ${X&&X.strictPref?"checked":""}>No going back, like the real exam (you can't revisit or change answers)</label>
+  </section>`;
+}
+ACT.examSetup=()=>go("examSetup");
+ACT.examStart=async n=>{
+  n=+n;const strict=$("#strict").checked;
+  const pool=Object.values(ITEMS).filter(i=>i.t==="q");
+  // weight by exam domain weights
+  const byD={};shuffle(pool).forEach(it=>(byD[it.d]=byD[it.d]||[]).push(it.id));
+  const ds=Object.keys(byD).map(Number),tw=ds.reduce((a,d)=>a+DOMAINS[d-1].w,0);
+  let ids=[];ds.forEach(d=>{ids=ids.concat(byD[d].slice(0,Math.round(n*DOMAINS[d-1].w/tw)))});
+  const rest=shuffle(pool.map(p=>p.id).filter(id=>!ids.includes(id)));while(ids.length<n&&rest.length)ids.push(rest.pop());
+  ids=shuffle(ids).slice(0,n);
+  await go_quiet("exam");
+  X={ids,ans:{},flag:{},idx:0,orders:ids.map(()=>shuffle([0,1,2,3])),end:Date.now()+n*72000,strict,strictPref:strict,confirm:false,done:false};
+  X.timer=setInterval(tick,1000);renderExam();
+};
+function tick(){
+  if(!X||X.done)return clearInterval(X&&X.timer);
+  const ms=X.end-Date.now(),c=$("#clock");
+  if(ms<=0){finishExam(true);return}
+  if(c){c.textContent=fmtClock(ms);c.classList.toggle("low",ms<120000)}
+}
+const fmtClock=ms=>{const s=Math.max(0,Math.ceil(ms/1000));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;return(h?h+":"+String(m).padStart(2,"0"):m)+":"+String(ss).padStart(2,"0")};
+function renderExam(){
+  if(X.done)return renderExamResult();
+  const id=X.ids[X.idx],it=ITEMS[id],ord=X.orders[X.idx],a=X.ans[X.idx],n=X.ids.length,answered=Object.keys(X.ans).length;
+  main.innerHTML=`<div class="ebar"><h2>Exam simulation</h2><span class="chip mono">Q ${X.idx+1} / ${n}</span>${X.strict?'<span class="chip brass">No going back</span>':""}<span class="clock" id="clock">${fmtClock(X.end-Date.now())}</span></div>
+  <section class="stage"><p class="eyebrow">Domain ${it.d} · ${esc(DOMAINS[it.d-1].name)}</p><p class="big">${esc(it.q)}</p>
+    <div class="opts">${ord.map((o,k)=>`<button class="opt ${a===k?"sel":""}" data-act="xpick" data-arg="${k}"><span class="k">${LETTERS[k]}</span><span>${esc(it.o[o])}</span></button>`).join("")}</div>
+    <div class="row" style="justify-content:space-between">
+      <div class="row">${X.strict?"":`<button class="btn" data-act="xprev" ${X.idx?"":"disabled"}>${IC.back}Previous</button><button class="btn ${X.flag[X.idx]?"primary":""}" data-act="xflag">${X.flag[X.idx]?"Flagged":"Flag for review"}</button>`}</div>
+      ${X.idx<n-1?`<button class="btn primary" data-act="xnext" ${X.strict&&a==null?"disabled":""}>Next${IC.next}</button>`:`<button class="btn primary" data-act="xfinish" ${X.strict&&a==null?"disabled":""}>Finish exam</button>`}
+    </div>
+  </section>
+  ${X.strict?"":`<section class="panel" style="display:grid;gap:10px"><div class="row" style="justify-content:space-between"><span class="note">${answered} of ${n} answered · ${Object.values(X.flag).filter(Boolean).length} flagged</span><button class="btn sm" data-act="xfinish">Finish exam</button></div>
+    <div class="egrid">${X.ids.map((_,i)=>`<button class="${X.ans[i]!=null?"ans":""} ${X.flag[i]?"flag":""} ${i===X.idx?"cur":""}" data-act="xgo" data-arg="${i}" aria-label="Question ${i+1}">${i+1}</button>`).join("")}</div>
+    ${X.confirm?`<div class="confirm"><span>Finish now? ${n-answered?plural(n-answered,"question")+" unanswered count as wrong.":"All questions answered."}</span><button class="btn sm danger" data-act="xfinishYes">Finish</button><button class="btn sm" data-act="xfinishNo">Keep going</button></div>`:""}</section>`}`;
+}
+ACT.xpick=k=>{X.ans[X.idx]=+k;renderExam()};
+ACT.xnext=()=>{if(X.idx<X.ids.length-1){X.idx++;X.confirm=false;renderExam()}};
+ACT.xprev=()=>{if(X.idx>0){X.idx--;renderExam()}};
+ACT.xgo=i=>{X.idx=+i;renderExam()};
+ACT.xflag=()=>{X.flag[X.idx]=!X.flag[X.idx];renderExam()};
+ACT.xfinish=()=>{if(X.strict)return finishExam(false);X.confirm=true;renderExam()};
+ACT.xfinishYes=()=>finishExam(false);
+ACT.xfinishNo=()=>{X.confirm=false;renderExam()};
+function finishExam(timeout){
+  if(X.done)return;X.done=true;X.timeout=timeout;clearInterval(X.timer);
+  let right=0;X.res=X.ids.map((id,i)=>{const ok=X.ans[i]!=null&&X.orders[i][X.ans[i]]===0;if(ok)right++;grade(id,ok?"good":"wrong");return ok});
+  X.pct=Math.round(right/X.ids.length*100);X.right=right;
+  P.x.push({t:today(),s:X.pct,n:X.ids.length});save();renderExam();
+}
+function renderExamResult(){
+  const byD={};X.ids.forEach((id,i)=>{const d=ITEMS[id].d;byD[d]=byD[d]||[0,0];byD[d][1]++;if(X.res[i])byD[d][0]++});
+  const missed=X.ids.map((id,i)=>[id,i]).filter(([id,i])=>!X.res[i]);
+  const pass=X.pct>=70;
+  main.innerHTML=`<div class="lbar"><button class="btn sm ghost" data-act="home">${IC.back}Home</button><h2>Simulation results</h2></div>
+  <section class="panel" style="display:grid;gap:14px">
+    <div class="row" style="gap:28px;align-items:flex-end"><div><div class="result-big">${X.pct}%</div><p class="note">${X.right} of ${X.ids.length} correct${X.timeout?" · time ran out":""}</p></div>
+    <span class="chip ${pass?"good":"bad"}">${pass?"On track: 70% or better":"Below the 70% target"}</span></div>
+    <p class="note">ISC2 doesn't publish a percentage pass mark (you need 700 of 1000 scaled points). Consistently scoring 70% or more on fresh questions is a common readiness signal.</p>
+    <div class="tblwrap"><table><thead><tr><th>Domain</th><th style="text-align:right">Correct</th><th style="text-align:right">Score</th></tr></thead><tbody>
+    ${Object.keys(byD).sort().map(d=>`<tr><td>D${d} ${esc(DOMAINS[d-1].name)}</td><td class="n">${byD[d][0]}/${byD[d][1]}</td><td class="n">${Math.round(byD[d][0]/byD[d][1]*100)}%</td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="row"><button class="btn primary" data-act="examSetup">New simulation</button><button class="btn" data-act="home">Home</button></div>
+  </section>
+  ${missed.length?`<h3>Review your misses (${missed.length})</h3><div class="missed">${missed.map(([id,i])=>{const it=ITEMS[id],a=X.ans[i];return`<div class="panel"><p class="eyebrow">D${it.d} · lesson ${it.l}</p><p style="font-weight:600">${esc(it.q)}</p>
+    ${a!=null?`<p class="muted">Your answer: ${esc(it.o[X.orders[i][a]])}</p>`:'<p class="muted">Not answered</p>'}<div class="fb good"><strong>${esc(it.o[0])}</strong><span>${esc(it.why)}</span></div></div>`}).join("")}</div>`:""}`;
+}
+
+/* ================= notes ================= */
+let notesD=1;
+function vNotes(){
+  const ls=domainLessons(notesD);
+  main.innerHTML=`<div style="display:grid;gap:6px"><h1>Quick-reference notes</h1><p class="muted">Key points and flashcards for each lesson. Tap Listen to hear the recap, or ask Claude for a fresh practice question.</p></div>
+  <div class="tabs">${DOMAINS.map(d=>`<button data-act="notesD" data-arg="${d.n}" aria-pressed="${d.n===notesD}">D${d.n}</button>`).join("")}</div>
+  <h2>Domain ${notesD}: ${esc(DOMAINS[notesD-1].name)} <span class="chip mono">${DOMAINS[notesD-1].w}%</span></h2>
+  ${ls.length?ls.map(l=>`<section class="panel note-l"><div class="row" style="justify-content:space-between"><div><p class="eyebrow">${esc(l.objective||l.id)}</p><h3>${esc(l.id)} ${esc(l.title)}</h3></div>
+    <div class="row" style="gap:6px"><button class="btn sm" data-act="noteListen" data-arg="${l.id}">${IC.speaker}Listen</button><button class="btn sm" data-act="noteAI" data-arg="${l.id}">${IC.spark}Practice question</button></div></div>
+    <ul class="keys">${(l.keys||[]).map(k=>`<li>${esc(k)}</li>`).join("")}</ul>
+    <details><summary class="note" style="cursor:pointer;font-weight:600">${l.concepts.length} flashcards</summary><div class="cards-list">${l.concepts.map(c=>`<div><b>${esc(c.card.front)}</b><span class="muted">${esc(c.card.back)}</span></div>`).join("")}</div></details>
+    <div class="ai" id="ai-${l.id.replace(".","-")}" hidden></div></section>`).join("")
+  :`<section class="panel"><p>Lessons for this domain are being written. Domain ${notesD} is ${DOMAINS[notesD-1].w}% of the exam.</p></section>`}
+  <p class="amsg" id="amsg"></p>`;
+}
+ACT.notesD=n=>{notesD=+n;stopAudio();vNotes()};
+ACT.noteListen=id=>{const l=LESSON_BY_ID[id];stopAudio().then(()=>say([T(`Lesson ${l.id}, ${l.title}. ${l.recap}`)]))};
+ACT.noteAI=id=>aiQuestion(document.getElementById("ai-"+id.replace(".","-")),LESSON_BY_ID[id]);
+ACT.aiPick=(k,el)=>{
+  const box=el.closest(".ai"),j=box._q;if(!j||box._done)return;box._done=true;k=+k;
+  box.querySelectorAll(".opt").forEach((b,i)=>{b.disabled=true;if(i===j.answer)b.classList.add("right");else if(i===k)b.classList.add("wrong")});
+  box.querySelector(".fbx").innerHTML=`<div class="fb ${k===j.answer?"good":"bad"}"><strong>${k===j.answer?"Correct.":"Not quite. The answer is "+LETTERS[j.answer]+"."}</strong><span>${esc(j.why)}</span></div>`;
+};
+
+/* ================= settings ================= */
+let setConfirm=null;
+function vSettings(){
+  const pr=STORE.profiles[PK];
+  const vsel=(id,val)=>`<select id="${id}">${VOICES.map(([v,l])=>`<option value="${v}" ${v===val?"selected":""}>${l}</option>`).join("")}</select>`;
+  main.innerHTML=`<h1>Settings</h1>
+  <section class="panel set">
+    <h3>Exam</h3>
+    <div class="line"><div><b>Exam date</b><p class="note">Review intervals are capped so every card comes back before this date.</p></div><input type="date" id="sExam" value="${esc(P.exam)}" class="mono" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface)"></div>
+  </section>
+  <section class="panel set">
+    <h3>Voices</h3>
+    <p class="note">${esc(audioNote)}. Two voices help your brain switch modes: the teacher explains, the quizzer asks.</p>
+    <div class="line"><div><b>Teacher</b><p class="note">Reads concepts, recaps and explanations</p></div><div class="vrow">${vsel("sVT",P.voiceT)}<button class="btn sm" data-act="preview" data-arg="t">${IC.play}Preview</button></div></div>
+    <div class="line"><div><b>Quizzer</b><p class="note">Reads flashcards and questions</p></div><div class="vrow">${vsel("sVQ",P.voiceQ)}<button class="btn sm" data-act="preview" data-arg="q">${IC.play}Preview</button></div></div>
+    <div class="line"><div><b>Speed</b> <span class="mono" id="rateV">${P.rate.toFixed(2)}×</span></div><input type="range" id="sRate" min="0.7" max="1.5" step="0.05" value="${P.rate}"></div>
+    <div class="line"><div><b>Autoplay</b><p class="note">Move on automatically after each explanation finishes</p></div><label class="toggle"><input type="checkbox" id="sAuto" ${P.auto?"checked":""}>On</label></div>
+    <div class="line"><div><b>Read reviews aloud</b></div><label class="toggle"><input type="checkbox" id="sRA" ${P.readAloud?"checked":""}>On</label></div>
+    <p class="amsg" id="amsg"></p>
+  </section>
+  <section class="panel set">
+    <h3>Profile: ${esc(pr.name)}</h3>
+    <div class="row"><button class="btn" data-act="logout">Switch profile / log out</button><button class="btn danger" data-act="askReset">Reset progress</button><button class="btn danger" data-act="askDelete">Delete profile</button></div>
+    ${setConfirm?`<div class="confirm"><span>${setConfirm==="reset"?"Erase all lessons, reviews and scores for this profile?":"Delete this profile and all its progress?"} This can't be undone.</span><button class="btn sm danger" data-act="doConfirm">${setConfirm==="reset"?"Erase progress":"Delete profile"}</button><button class="btn sm" data-act="cancelConfirm">Cancel</button></div>`:""}
+    <p class="note">Progress is saved in this browser only. Using another browser or device starts a separate profile.</p>
+  </section>`;
+  $("#sExam").addEventListener("change",e=>{if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){P.exam=e.target.value;save()}});
+  $("#sVT").addEventListener("change",e=>{P.voiceT=e.target.value;save()});
+  $("#sVQ").addEventListener("change",e=>{P.voiceQ=e.target.value;save()});
+  $("#sRate").addEventListener("input",e=>{P.rate=+e.target.value;$("#rateV").textContent=P.rate.toFixed(2)+"×";save()});
+  $("#sAuto").addEventListener("change",e=>{P.auto=e.target.checked;save()});
+  $("#sRA").addEventListener("change",e=>{P.readAloud=e.target.checked;save()});
+}
+ACT.preview=async w=>{await stopAudio();say([w==="t"?T("Confidentiality, integrity and availability. The C I A triad is the foundation of everything you'll learn."):Q("Flashcard. Which canon of the I S C squared Code of Ethics comes first?")])};
+ACT.askReset=()=>{setConfirm="reset";vSettings()};
+ACT.askDelete=()=>{setConfirm="delete";vSettings()};
+ACT.cancelConfirm=()=>{setConfirm=null;vSettings()};
+ACT.doConfirm=()=>{
+  if(setConfirm==="reset"){const keep={exam:P.exam,voiceT:P.voiceT,voiceQ:P.voiceQ,rate:P.rate,auto:P.auto,readAloud:P.readAloud};P=Object.assign(defaultData(),keep);save();setConfirm=null;go("home")}
+  else{delete STORE.profiles[PK];if(STORE.last===PK)STORE.last=null;writeStore();setConfirm=null;PK=null;P=null;go("login")}
+};
+
+/* ================= keyboard ================= */
+document.addEventListener("keydown",e=>{
+  if(e.target.closest("input,select,textarea")||e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  const click=sel=>{const b=document.querySelector(sel);if(b&&!b.disabled){e.preventDefault();b.click();return true}return false};
+  if(view==="lesson"||view==="review"){
+    if(k===" "){e.preventDefault();ACT.playpause();return}
+    if(k==="arrowright"&&view==="lesson"){e.preventDefault();lnext();return}
+    const opts=[...document.querySelectorAll(".stage .opt:not(:disabled)")];
+    const li="1234".indexOf(k)>=0?"1234".indexOf(k):"abcd".indexOf(k);
+    if(opts.length&&li>=0&&li<opts.length){e.preventDefault();opts[li].click();return}
+    const g=[...document.querySelectorAll(".stage .grades .btn")];
+    if(g.length&&"1234".indexOf(k)>=0&&g["1234".indexOf(k)]){e.preventDefault();g["1234".indexOf(k)].click();return}
+    if(k==="enter"){if(click("[data-act=reveal]"))return;if(click(".stage [data-arg=wrong][data-act$=conf]"))return;click(".stage .grades .btn.primary")}
+  }else if(view==="exam"&&X&&!X.done){
+    const li="1234".indexOf(k)>=0?"1234".indexOf(k):"abcd".indexOf(k);
+    if(li>=0){e.preventDefault();ACT.xpick(li);return}
+    if(k==="enter"||k==="arrowright"){click("[data-act=xnext]")}
+    else if(k==="arrowleft"){click("[data-act=xprev]")}
+    else if(k==="f"){click("[data-act=xflag]")}
+  }
+});
+
+/* ================= boot ================= */
+loadContent();readStore();AE.ready=AE.init();renderAudioNote();
+if(STORE.last&&STORE.profiles[STORE.last])loginSel=STORE.last;
+go("login");
+</script>
+
+</body></html>
