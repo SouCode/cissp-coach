@@ -227,6 +227,7 @@ input[type=range]{width:200px;accent-color:var(--accent)}
 
 <script src="content/d1-part1.js"></script>
 <script src="content/d1-part2.js"></script>
+<script src="speech.js"></script>
 <script>
 "use strict";
 /* ================= constants ================= */
@@ -290,7 +291,7 @@ const LS="cissp-recall:v1";
 let STORE={profiles:{},last:null},storageOK=true,PK=null,P=null;
 function readStore(){try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&s.profiles)STORE=s}catch(e){storageOK=false}}
 function writeStore(){try{localStorage.setItem(LS,JSON.stringify(STORE))}catch(e){storageOK=false}}
-function defaultData(){return{exam:EXAM_DEFAULT,voiceT:"buttery",voiceQ:"glassy",rate:1,auto:true,readAloud:true,lessons:{},c:{},h:{},x:[],created:today()}}
+function defaultData(){return{exam:EXAM_DEFAULT,audio:"rec",voiceT:"buttery",voiceQ:"glassy",rate:1,auto:true,readAloud:true,lessons:{},c:{},h:{},x:[],created:today()}}
 function save(){if(PK&&STORE.profiles[PK]){STORE.profiles[PK].data=P;writeStore()}}
 async function hashPin(salt,pin){
   try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(salt+":"+pin));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
@@ -390,22 +391,72 @@ const AE={tts:null,mode:"none",state:"idle",lineCb:null,_dev:null,ready:null,coo
   },
   devCancel(){if(this._dev){this._dev.cancelled=true;try{this._dev.rej({code:"stopped"})}catch(e){}this._dev=null}try{window.speechSynthesis.cancel()}catch(e){}},
   async stop(){
+    if(this.active==="rec"){REC.stop();this.setState("idle")}
     if(this.tts&&this.active==="claude"){try{await this.tts.stop()}catch(e){}}
     if(this._dev||this.active==="device"){this.devCancel();this.setState("idle")}
   },
-  async pause(){if(this.active==="claude"&&this.tts){try{await this.tts.pause()}catch(e){}}else if(this.active==="device"){window.speechSynthesis.pause();this.setState("paused")}},
-  async resume(){if(this.active==="claude"&&this.tts){try{await this.tts.resume()}catch(e){}}else if(this.active==="device"){window.speechSynthesis.resume();this.setState("speaking")}}
+  async pause(){if(this.active==="rec")REC.pause();else if(this.active==="claude"&&this.tts){try{await this.tts.pause()}catch(e){}}else if(this.active==="device"){window.speechSynthesis.pause();this.setState("paused")}},
+  async resume(){if(this.active==="rec")REC.resume();else if(this.active==="claude"&&this.tts){try{await this.tts.resume()}catch(e){}}else if(this.active==="device"){window.speechSynthesis.resume();this.setState("speaking")}}
 };
-const T=(text,id)=>({text,who:"t",id});
-const Q=(text,id)=>({text,who:"q",id});
+const {T,Q}=SPEECH;
+
+/* ================= recorded voices (audio/<pack>.json, clips keyed by SPEECH.key) ================= */
+const REC={clips:new Map(),loading:{},voices:null,el:null,cur:null,
+  load(pack){
+    if(!this.loading[pack])this.loading[pack]=fetch("audio/"+pack+".json").then(r=>r.ok?r.json():null).then(j=>{
+      if(!j||!j.clips)return;
+      if(j.voices&&!this.voices)this.voices=j.voices;
+      for(const k in j.clips)this.clips.set(k,j.clips[k]);
+    }).catch(()=>{});
+    return this.loading[pack];
+  },
+  ready(){return Promise.all(Object.values(this.loading))},
+  has(lines){return lines.length>0&&lines.every(l=>this.clips.has(SPEECH.key(l.who,l.text)))},
+  play(lines){
+    this.stop();
+    const a=this.el||(this.el=new Audio());
+    return new Promise((res,rej)=>{
+      const me={cancelled:false,rej};this.cur=me;let i=0;
+      const next=()=>{
+        if(me.cancelled)return;
+        if(i>=lines.length){this.cur=null;AE.setState("idle");res();return}
+        const l=lines[i];
+        a.onplaying=()=>{if(me.cancelled)return;AE.setState("speaking");if(AE.lineCb&&l.id)AE.lineCb(l.id)};
+        a.onended=()=>{i++;next()};
+        a.onerror=()=>{i++;next()};
+        a.src="data:audio/mpeg;base64,"+this.clips.get(SPEECH.key(l.who,l.text));a.playbackRate=P.rate;a.preservesPitch=true;
+        a.play().catch(e=>{if(me.cancelled||!e||e.name!=="NotAllowedError")return;me.cancelled=true;this.cur=null;AE.setState("idle");rej({code:"no_gesture"})});
+      };
+      AE.setState("starting");next();
+    });
+  },
+  stop(){
+    const me=this.cur;this.cur=null;
+    if(this.el){this.el.onended=this.el.onerror=this.el.onplaying=null;this.el.pause()}
+    if(me){me.cancelled=true;try{me.rej({code:"stopped"})}catch(e){}}
+  },
+  pause(){if(this.el&&this.cur){this.el.pause();AE.setState("paused")}},
+  resume(){if(this.el&&this.cur){this.el.play().catch(()=>{});AE.setState("speaking")}},
+  setRate(r){if(this.el)this.el.playbackRate=r},
+  voiceName(w){const v=this.voices&&this.voices[w];return v?v.split("_").pop().replace(/^./,c=>c.toUpperCase()):"Recorded"}
+};
 function setAudioMsg(m){const el=$("#amsg");if(el)el.textContent=m||""}
 async function say(lines,onLine,retry){
+  lines=lines.filter(l=>l.text);
+  const tk=stepTok;
+  if(!retry&&P&&P.audio!=="claude"){ // recorded clips first; any line without one uses a live voice
+    await REC.ready();if(tk!==stepTok)return false;
+    if(REC.has(lines)){
+      AE.lineCb=onLine||null;setAudioMsg("");AE.active="rec";
+      try{await REC.play(lines);return true}
+      catch(e){if(e&&e.code==="no_gesture")setAudioMsg("Tap play to start the audio.");return false}
+    }
+  }
   await AE.ready;
   if(AE.mode==="none"){setAudioMsg("Audio isn't available in this browser. Open the transcript to read along.");return false}
-  const tk=stepTok;
   if(!retry){await wait(300);if(tk!==stepTok)return false} // rapid taps through steps only send one request
   AE.lineCb=onLine||null;if(!retry)setAudioMsg("");
-  try{await AE.speak(lines.filter(l=>l.text));if(AE.active==="claude")setAudioMsg("");return true}
+  try{await AE.speak(lines);if(AE.active==="claude")setAudioMsg("");return true}
   catch(e){
     const code=e&&e.code;
     if(code==="no_gesture"){setAudioMsg("Tap play to start the audio.");return false}
@@ -432,6 +483,7 @@ async function say(lines,onLine,retry){
 }
 let audioNote="";
 function renderAudioNote(){audioNote=AE.mode==="claude"?"Claude voices on":AE.mode==="device"?"Device voice (Claude voice not available here)":"No audio in this browser"}
+const audioLabel=()=>P&&P.audio!=="claude"&&REC.clips.size?"Recorded voices":audioNote;
 function syncPlay(){
   const b=$("#playBtn");if(!b)return;
   const on=AE.state==="speaking"||AE.state==="starting";
@@ -546,7 +598,7 @@ function vHome(){
     <div class="tile"><b>${st}</b><span>day streak</span></div>
   </section>
   <section class="panel plan">
-    <div class="plan-head"><div class="row"><span class="chip brass">${esc(ph.name)}</span><span class="chip">${esc(audioNote)}</span></div><p>${esc(ph.tip)}</p></div>
+    <div class="plan-head"><div class="row"><span class="chip brass">${esc(ph.name)}</span><span class="chip">${esc(audioLabel())}</span></div><p>${esc(ph.tip)}</p></div>
     <div class="acts">
       ${nx?`<button class="btn primary" data-act="lesson" data-arg="${nx.id}">${IC.play}<span class="t"><span>${P.lessons[LESSONS[0].id]?"Next lesson":"Start your first lesson"}: ${esc(nx.id)} ${esc(nx.title)}</span><small>Listen, recall, then a short quiz · about ${nx.minutes||8} min</small></span></button>`
         :`<div class="fb info" style="grid-column:1/-1"><strong>You've finished every available lesson.</strong><span>New domains are being added. Until then, keep reviews at zero and run exam simulations.</span></div>`}
@@ -592,6 +644,7 @@ async function startLesson(id,auto){
   (l.quiz||[]).forEach((q,i)=>steps.push({k:"quiz",i}));
   steps.push({k:"done"});
   L={l,steps,s:0,auto,cards:{},res:{},revealed:false,picked:null,order:{},graded:false};
+  REC.load(l.id);
   renderLesson();runStep();
 }
 async function go_quiet(v){await stopAudio();clearInterval(X&&X.timer);view=v;window.scrollTo(0,0);document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current","false"))}
@@ -658,35 +711,35 @@ async function runStep(){
   const tok=++stepTok,st=L.steps[L.s],l=L.l;
   const alive=()=>tok===stepTok&&view==="lesson";
   const autoNext=async ok=>{if(ok&&alive()&&(L.auto||P.auto)){await wait(700);if(alive())lnext()}};
-  if(st.k==="intro"){autoNext(await say([T(`Lesson ${l.id}. ${l.title}.`),T(l.intro)]))}
-  else if(st.k==="concept"){const c=l.concepts[st.i];autoNext(await say([T(c.title+".","t0"),...c.script.map((p,j)=>T(p,"p"+j))],hl))}
+  if(st.k==="intro"){autoNext(await say(SPEECH.intro(l)))}
+  else if(st.k==="concept"){const c=l.concepts[st.i];autoNext(await say(SPEECH.concept(c),hl))}
   else if(st.k==="card"){
     const c=l.concepts[st.i];
     if(!L.revealed){
-      const ok=await say([Q("Flashcard. "+c.card.front)]);
+      const ok=await say(SPEECH.cardFront(c.card.front,true));
       if(ok&&alive()&&L.auto){await wait(5000);if(!alive())return;L.revealed=true;renderLesson();runStep()}
     }else{
-      const ok=await say([Q(c.card.back)]);
+      const ok=await say(SPEECH.cardBack(c.card.back));
       if(ok&&alive()&&L.auto){await wait(1200);if(alive())lnext()}
     }
   }
-  else if(st.k==="recap"){autoNext(await say([T("Let's recap.","t0"),T(l.recap,"p0")],hl))}
+  else if(st.k==="recap"){autoNext(await say(SPEECH.recap(l),hl))}
   else if(st.k==="quiz"||st.k==="check"){
     const q=stepQ(st),ord=ordOf();
     if(L.picked==null){
-      const ok=await say([Q(st.k==="check"?`Quick check. ${q.q}`:`Question ${st.i+1}. ${q.q}`),...ord.map((o,k)=>Q(`${LETTERS[k]}. ${q.options[o]}`))]);
+      const ok=await say(SPEECH.question(st.k==="check"?"Quick check.":`Question ${st.i+1}.`,q.q,q.options,ord));
       if(ok&&alive()&&L.auto){await wait(7000);if(!alive())return;L.picked=ord.indexOf(0);renderLesson();runStep()}
     }else{
-      const ci=ord.indexOf(0),right=ord[L.picked]===0&&!L.auto;
-      const ok=await say([T((L.auto?`The answer is ${LETTERS[ci]}. ${q.options[0]}. `:right?"Correct. ":`Not quite. The answer is ${LETTERS[ci]}. ${q.options[0]}. `)+q.why)]);
+      const right=ord[L.picked]===0&&!L.auto;
+      const ok=await say(SPEECH.feedback(L.auto?"reveal":right?"right":"wrong",q.options,ord,q.why));
       if(ok&&alive()&&L.auto){await wait(1500);if(alive())lnext()}
     }
   }
   else if(st.k==="done"){
     finishLesson();
     const nx=LESSONS[LESSONS.indexOf(l)+1];
-    const ok=await say([T(L.auto?`That's the end of lesson ${l.id}. Its flashcards and questions are waiting in your review.${nx?" Next up, lesson "+nx.id+", "+nx.title+".":""}`
-      :`Lesson complete. You got ${tally("quiz")[0]} of ${l.quiz.length} review questions right. Everything from this lesson is now scheduled for review.`)]);
+    if(nx)REC.load(nx.id);
+    const ok=await say(SPEECH.lessonDone(l,nx,L.auto,tally("quiz")[0],l.quiz.length));
     if(ok&&alive()&&L.auto&&nx){await wait(3000);if(alive())startLesson(nx.id,true)}
   }
 }
@@ -727,7 +780,7 @@ ACT.aiListen=(a,el)=>{const box=el.closest(".ai");if(box&&box.dataset.say)say([T
 
 /* ================= review (spaced repetition) ================= */
 let R=null;
-ACT.review=async()=>{const ids=dueIds();if(!ids.length)return;await go_quiet("review");R={q:shuffleByDomain(ids),idx:0,n:0,k:0,re:{},revealed:false,picked:null,order:null};prepReview();renderReview();readReview()};
+ACT.review=async()=>{const ids=dueIds();if(!ids.length)return;new Set(ids.map(id=>ITEMS[id].l)).forEach(p=>REC.load(p));await go_quiet("review");R={q:shuffleByDomain(ids),idx:0,n:0,k:0,re:{},revealed:false,picked:null,order:null};prepReview();renderReview();readReview()};
 function shuffleByDomain(ids){ // interleave lessons so the same topic doesn't repeat back to back
   const by={};shuffle(ids).forEach(id=>{const l=ITEMS[id].l;(by[l]=by[l]||[]).push(id)});
   const out=[],keys=shuffle(Object.keys(by));let more=true;
@@ -741,7 +794,7 @@ function renderReview(){
       <div class="row" style="gap:24px"><div><div class="result-big">${R.k}/${R.n}</div><p class="note">answered correctly</p></div></div>
       <p>Missed cards come back tomorrow, and the rest are spaced further out, timed to your exam date.</p>
       <div class="row"><button class="btn primary" data-act="home">Back to home</button>${nextLesson()?`<button class="btn" data-act="lesson" data-arg="${nextLesson().id}">${IC.play}Next lesson</button>`:""}</div></section>`;
-    say([T(`Review complete. You got ${R.k} out of ${R.n}.`)]);return;
+    say(SPEECH.reviewDone());return;
   }
   const id=R.q[R.idx],it=ITEMS[id],l=LESSON_BY_ID[it.l];
   const left=R.q.length-R.idx;
@@ -767,9 +820,9 @@ function readReview(){
   if(!P.readAloud||!R||R.idx>=R.q.length)return;
   stepTok++;
   const it=ITEMS[R.q[R.idx]];
-  if(it.t==="f")say(R.revealed?[Q(it.back)]:[Q(it.front)]);
-  else if(R.picked==null)say([Q(it.q),...R.order.map((o,k)=>Q(`${LETTERS[k]}. ${it.o[o]}`))]);
-  else{const ci=R.order.indexOf(0),ok=R.order[R.picked]===0;say([T((ok?"Correct. ":`The answer is ${LETTERS[ci]}. ${it.o[0]}. `)+it.why)])}
+  if(it.t==="f")say(R.revealed?SPEECH.cardBack(it.back):SPEECH.cardFront(it.front,false));
+  else if(R.picked==null)say(SPEECH.question("",it.q,it.o,R.order));
+  else say(SPEECH.feedback(R.order[R.picked]===0?"right":"reveal",it.o,R.order,it.why));
 }
 async function rAdvance(res){
   const id=R.q[R.idx];grade(id,res);R.n++;if(res!=="wrong")R.k++;
@@ -877,7 +930,7 @@ function vNotes(){
   <p class="amsg" id="amsg"></p>`;
 }
 ACT.notesD=n=>{notesD=+n;stopAudio();vNotes()};
-ACT.noteListen=id=>{const l=LESSON_BY_ID[id];stopAudio().then(()=>say([T(`Lesson ${l.id}, ${l.title}. ${l.recap}`)]))};
+ACT.noteListen=id=>{const l=LESSON_BY_ID[id];REC.load(l.id);stopAudio().then(()=>say(SPEECH.noteRecap(l)))};
 ACT.noteAI=id=>aiQuestion(document.getElementById("ai-"+id.replace(".","-")),LESSON_BY_ID[id]);
 ACT.aiPick=(k,el)=>{
   const box=el.closest(".ai"),j=box._q;if(!j||box._done)return;box._done=true;k=+k;
@@ -888,7 +941,7 @@ ACT.aiPick=(k,el)=>{
 /* ================= settings ================= */
 let setConfirm=null;
 function vSettings(){
-  const pr=STORE.profiles[PK];
+  const pr=STORE.profiles[PK],rec=P.audio!=="claude";
   const vsel=(id,val)=>`<select id="${id}">${VOICES.map(([v,l])=>`<option value="${v}" ${v===val?"selected":""}>${l}</option>`).join("")}</select>`;
   main.innerHTML=`<h1>Settings</h1>
   <section class="panel set">
@@ -897,9 +950,11 @@ function vSettings(){
   </section>
   <section class="panel set">
     <h3>Voices</h3>
-    <p class="note">${esc(audioNote)}. Two voices help your brain switch modes: the teacher explains, the quizzer asks.</p>
-    <div class="line"><div><b>Teacher</b><p class="note">Reads concepts, recaps and explanations</p></div><div class="vrow">${vsel("sVT",P.voiceT)}<button class="btn sm" data-act="preview" data-arg="t">${IC.play}Preview</button></div></div>
-    <div class="line"><div><b>Quizzer</b><p class="note">Reads flashcards and questions</p></div><div class="vrow">${vsel("sVQ",P.voiceQ)}<button class="btn sm" data-act="preview" data-arg="q">${IC.play}Preview</button></div></div>
+    <p class="note">Two voices help your brain switch modes: the teacher explains, the quizzer asks.</p>
+    <div class="line"><div><b>Voice source</b><p class="note">${rec?"Recorded voices start instantly, work offline and have no limits. AI explanations still use a live voice.":esc(audioNote)+". Each line is generated as you listen."}</p></div>
+      <div class="vrow"><select id="sAudio"><option value="rec" ${rec?"selected":""}>Recorded</option><option value="claude" ${rec?"":"selected"}>Claude voices (live)</option></select></div></div>
+    <div class="line"><div><b>Teacher</b><p class="note">Reads concepts, recaps and explanations</p></div><div class="vrow">${rec?`<span class="chip">${esc(REC.voiceName("t"))}</span>`:vsel("sVT",P.voiceT)}<button class="btn sm" data-act="preview" data-arg="t">${IC.play}Preview</button></div></div>
+    <div class="line"><div><b>Quizzer</b><p class="note">Reads flashcards and questions</p></div><div class="vrow">${rec?`<span class="chip">${esc(REC.voiceName("q"))}</span>`:vsel("sVQ",P.voiceQ)}<button class="btn sm" data-act="preview" data-arg="q">${IC.play}Preview</button></div></div>
     <div class="line"><div><b>Speed</b> <span class="mono" id="rateV">${P.rate.toFixed(2)}×</span></div><input type="range" id="sRate" min="0.7" max="1.5" step="0.05" value="${P.rate}"></div>
     <div class="line"><div><b>Autoplay</b><p class="note">Move on automatically after each explanation finishes</p></div><label class="toggle"><input type="checkbox" id="sAuto" ${P.auto?"checked":""}>On</label></div>
     <div class="line"><div><b>Read reviews aloud</b></div><label class="toggle"><input type="checkbox" id="sRA" ${P.readAloud?"checked":""}>On</label></div>
@@ -912,13 +967,14 @@ function vSettings(){
     <p class="note">Progress is saved in this browser only. Using another browser or device starts a separate profile.</p>
   </section>`;
   $("#sExam").addEventListener("change",e=>{if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){P.exam=e.target.value;save()}});
-  $("#sVT").addEventListener("change",e=>{P.voiceT=e.target.value;save()});
-  $("#sVQ").addEventListener("change",e=>{P.voiceQ=e.target.value;save()});
-  $("#sRate").addEventListener("input",e=>{P.rate=+e.target.value;$("#rateV").textContent=P.rate.toFixed(2)+"×";save()});
+  $("#sAudio").addEventListener("change",e=>{P.audio=e.target.value;save();stopAudio();vSettings()});
+  if($("#sVT"))$("#sVT").addEventListener("change",e=>{P.voiceT=e.target.value;save()});
+  if($("#sVQ"))$("#sVQ").addEventListener("change",e=>{P.voiceQ=e.target.value;save()});
+  $("#sRate").addEventListener("input",e=>{P.rate=+e.target.value;$("#rateV").textContent=P.rate.toFixed(2)+"×";REC.setRate(P.rate);save()});
   $("#sAuto").addEventListener("change",e=>{P.auto=e.target.checked;save()});
   $("#sRA").addEventListener("change",e=>{P.readAloud=e.target.checked;save()});
 }
-ACT.preview=async w=>{await stopAudio();say([w==="t"?T("Confidentiality, integrity and availability. The C I A triad is the foundation of everything you'll learn."):Q("Flashcard. Which canon of the I S C squared Code of Ethics comes first?")])};
+ACT.preview=async w=>{await stopAudio();say(SPEECH.preview(w))};
 ACT.askReset=()=>{setConfirm="reset";vSettings()};
 ACT.askDelete=()=>{setConfirm="delete";vSettings()};
 ACT.cancelConfirm=()=>{setConfirm=null;vSettings()};
@@ -951,7 +1007,7 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ================= boot ================= */
-loadContent();readStore();AE.ready=AE.init();renderAudioNote();
+loadContent();readStore();AE.ready=AE.init();REC.load("common");renderAudioNote();
 if(STORE.last&&STORE.profiles[STORE.last])loginSel=STORE.last;
 go("login");
 </script>

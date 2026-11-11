@@ -6,7 +6,7 @@ Lessons are read aloud by a teacher voice, and a quizzer voice checks you after 
 
 ## Features
 
-- **Audio lessons**: concepts read in a teacher voice, questions and flashcards in a quizzer voice, with a transcript that highlights along.
+- **Audio lessons**: concepts read in a teacher voice, questions and flashcards in a quizzer voice, with a transcript that highlights along. Every lesson line is pre-recorded, so audio starts instantly, works offline and has no usage limits.
 - **Hands-free mode**: plays lessons back to back with no tapping, for walks and drives.
 - **Spaced repetition**: every flashcard and question goes into a review queue. Intervals are capped so each card comes back before exam day.
 - **Exam simulation**: timed at the real exam's pace (about 72 seconds a question), scored by domain, with an optional no-going-back mode.
@@ -35,11 +35,11 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-Opening `index.html` directly also works in most browsers.
+Serve it rather than opening `index.html` directly: browsers block the page from loading the recorded audio from a `file://` address, so the app would fall back to your device's voice.
 
-Two features need the Claude artifact runtime (`window.claude`), so they only work when the page is published as a Claude artifact:
+The recorded voices work everywhere. Some features need the Claude artifact runtime (`window.claude`), so they only work when the page is published as a Claude artifact:
 
-- **Claude voices**: elsewhere, the app falls back to the browser's built-in speech voice.
+- **Claude voices (live)**: an optional voice source in Settings. Elsewhere, lines without a recording use the browser's built-in speech voice.
 - **"Explain it differently" and AI practice questions**: these are hidden or show a notice when the runtime isn't there.
 
 Progress is stored in the browser's `localStorage`. It stays on that browser and device, and clearing site data erases it.
@@ -48,8 +48,11 @@ Progress is stored in the browser's `localStorage`. It stays on that browser and
 
 ```
 index.html            the app: styles, player, review scheduler, exam simulator
+speech.js             the exact lines spoken at each step, shared by the app and the recorder
 content/d1-part1.js   Domain 1 lessons 1.1–1.6
 content/d1-part2.js   Domain 1 lessons 1.7–1.12
+audio/                recorded clips: one pack per lesson (1.1.json …) plus common.json
+tools/                lines.mjs, record.py and check-audio.mjs for recording the audio
 ```
 
 ## Adding lessons
@@ -84,6 +87,23 @@ Each content file pushes lesson objects onto `window.CISSP_LESSONS`. Load new fi
 ```
 
 The **first option is always the correct answer**. The app shuffles the options before showing them.
+
+## Recording the audio
+
+The clips are made with [Kokoro](https://github.com/thewh1teagle/kokoro-onnx), an open-source voice engine that runs on your own computer. The teacher is Kokoro's **Heart** voice and the quizzer is **Emma**. Each pack is a JSON file of MP3 clips keyed by a hash of the voice and text, so the app finds a clip by the line it's about to say.
+
+After adding or editing lessons, record the new lines. Clips that already exist are kept, so only new or changed lines are recorded.
+
+```sh
+python3 -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile   # one time
+# one time: download kokoro-v1.0.onnx and voices-v1.0.bin from the kokoro-onnx releases into a models folder
+
+node tools/lines.mjs > /tmp/lines.json
+.venv/bin/python tools/record.py /tmp/lines.json --models path/to/models
+node tools/check-audio.mjs        # confirms every spoken line has a clip
+```
+
+You need `ffmpeg` with MP3 support on your PATH. `record.py` has a pronunciation guide (acronyms like GDPR, ISC2 and ISO 27001), which changes only the spoken audio, never the text on screen. Preview a tricky line with `--check "text"`.
 
 ## Disclaimer
 
